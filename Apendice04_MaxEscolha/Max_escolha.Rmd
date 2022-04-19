@@ -1,0 +1,183 @@
+---
+title: "Maximização da Escolha do Consumidor"
+subtitle: "Apêndice 2 - Aula 04 - Demanda Individual"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r xaringan-themer, include=FALSE, warning = FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#e32d91",
+  header_font_google=google_font("Montserrat"),
+  text_font_google=google_font("Source Sans Pro"),
+  text_font_size = "25px",
+)
+```
+
+
+# Maximização da escolha do consumidor
+
+- Vamos assumir que o Paulo deve decidir sobre a melhor combinação de pizza e iogurte.
+
+- A informação que ele tem:
+
+--
+
+- O orçamento total é de 45 R$
+
+--
+
+- Uma fatia de pizza custa R$ 3. Vamos usar `x` para denotá-la
+
+--
+
+- Um pote de iogurte custa R$ 1,50 e o denotaremos com a letra `y`
+
+--
+
+- A felicidade que o Paulo ganha ao consumir pizza e iogurte pode ser modelada pela função de utilidade: $U(x,y) = x^20,25y$
+
+---
+
+# Passo 1: Graficar a Reta Orçamentária (1/2)
+
+- Para graficar a R.O. devemos estimar quantas pizzas e iogurtes o Paulo iria consumir se gastasse seu dinheiro em apenas um deles
+
+--
+
+- $y=-2x+30$
+
+--
+
+- Isso significa ou 15 pizzas ou 30 iougurtes. Portanto, a R.O. será:
+
+---
+
+# Passo 1: Graficar a Reta Orçamentária (2/2)
+
+```{r, message=FALSE, echo = FALSE, fig.width=10, fig.height=6}
+library(tidyverse)
+
+
+budget <- function(x) (-2 * x) + 30
+
+ggplot() + 
+  # Draw the line
+  stat_function(data = tibble(x = 0:15), aes(x = x),
+                fun = budget, color = "#e32d91", 
+                size = 1.5) +
+  # Add a label
+  annotate(geom = "label", x = 2.5, y = budget(2.5), 
+           label = "R.O.", color = "#e32d91") +
+  labs(x = "Fatias de pizza", 
+       y = "Potes de iogurte") +
+  # Make the axes go all the way to zero
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 15, 5)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 30, 10)) +
+  coord_cartesian(xlim = c(0, 16), ylim = c(0, 32))+
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"))
+```
+
+
+---
+# Passo 2: Graficar as curvas de indiferença
+
+- Lembrando que a função de utilidade do Paulo era $U(x,y)=x^20,25y$
+
+--
+
+- Podemos rearranjar a expressão em função de `y` para que possamos graficar as curvas de indiferença. Para isto, podemos usar o `R` e o pacote `Ryacas`:
+
+```{r}
+library(Ryacas0)
+
+# criando variáveis Yacas
+x <- Sym("x")
+y <- Sym("y")
+U <- Sym("U")
+
+utility_u <- function(x, y) x^2 * (0.25 * y)
+utility_solved <- Solve(utility_u(x,y)==U,y)
+
+```
+
+---
+
+# Passo 2: Graficar as curvas de indiferença
+
+- De acordo com o resultado do `R`, a equação em função de `x`e `U` é: $y=U/0.25x$
+
+---
+
+# Passo 2: Graficar as curvas de indiferença
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=6}
+
+
+utility_y <- function(my_x, my_U) {
+  solved <- Solve(utility_u(x,y)==U,y)
+  solution <- Eval(solved, list(x = my_x, U = my_U))
+  # Regex incantation to extract numbers
+  as.numeric(str_extract(solution, "-?[0-9]\\d*(\\.\\d+)?"))
+}
+
+
+ggplot() + 
+  # Budget line
+  stat_function(data = tibble(x = 0:15), aes(x = x),
+                fun = budget, color = "#e32d91", size = 1.5) +
+  annotate(geom = "label", x = 2.5, y = budget(2.5), 
+           label = "R.O.", color = "#e32d91") +
+  # U = 10
+  stat_function(data = tibble(x = 1:15), aes(x = x),
+                fun = utility_y, args = list(my_U = 10),
+                color = "#ab62c0", size = 1.5) +
+  annotate(geom = "label", x = 2.5, y = utility_y(2.5, 10), 
+           label = "U = 10", color = "#ab62c0") +
+  # U = 100
+  stat_function(data = tibble(x = 1:15), aes(x = x),
+                fun = utility_y, args = list(my_U = 100),
+                color = "#ca5670", size = 1.5) +
+  annotate(geom = "label", x = 7, y = utility_y(7, 100), 
+           label = "U = 100", color = "#ca5670") +
+  # U = 500
+  stat_function(data = tibble(x = 1:15), aes(x = x),
+                fun = utility_y, args = list(my_U = 500),
+                color = "#c57c3c", size = 1.5) +
+  annotate(geom = "label", x = 12.5, y = utility_y(12.5, 500), 
+           label = "U = 500", color = "#c57c3c") +
+  labs(x = "Fatias de pizza", 
+       y = "Potes de iogurte") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 15, 5)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 30, 10)) +
+  coord_cartesian(xlim = c(0, 16), ylim = c(0, 32)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"))
+```
+
+---
+
+class: center, middle
+
+# Fim do Apêndice 2
+
+Prof. Mauricio Uriona Maldonado

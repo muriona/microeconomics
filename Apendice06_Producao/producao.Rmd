@@ -1,0 +1,179 @@
+---
+title: "Teoria da Produção"
+subtitle: "Apêndice - Aula 06 - Curto Prazo"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE,
+        echo = FALSE)
+```
+
+```{r xaringan-themer, include=FALSE, warning = FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#e32d91",
+  header_font_google=google_font("Montserrat"),
+  text_font_google=google_font("Source Sans Pro"),
+  text_font_size = "28px"
+)
+```
+
+
+# Função de Produção
+
+- Vamos começar entendendo a forma de uma função de produção quando apenas um insumo é variável.
+
+
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+library(Deriv)
+library(tidyverse)
+library(DT)
+
+funcao_prod <- function(h){
+  
+  (154/(1+exp(-0.8*(h-5))))+1
+}
+
+L <- seq(from= 0.1, to=15, by=0.1)
+Q <- funcao_prod(L)
+producao <- data.frame(L,Q)
+
+datatable(producao, options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'font-size': '15px', 'background-color': '#c2d1f0', 'color': '#fff'});",
+    "}"))) %>%  formatStyle(columns = colnames(.$x$data), `font-size` = '12px')
+
+```
+
+
+
+---
+# Graficar
+
+- Os dados da tabela podem ser representados como uma função matemática da forma: $Q=(\frac{154}{1+exp(-0.8*(L-5))})+1$
+
+--
+
+- A seguir, vamos graficá-la.
+
+
+```{r, echo =FALSE, fig.height=4, fig.width=8}
+
+
+PMg <- Deriv(funcao_prod, "h")
+
+
+producao <- producao %>% 
+  mutate(Q = funcao_prod(L),
+         PMg = PMg(L),
+         PMe = Q/L)
+
+producao %>% 
+  ggplot(aes(L,Q))+
+  geom_line(color="#e32d91", size=1)
+```
+
+
+---
+# Calculando PMg e PMe
+
+- O PMg pode ser entendido como a derivada $\frac{dQ}{dL}$
+
+--
+
+- Já, o PMe pode ser entendido como o produto médio por unidade de trabalho: $\frac{Q}{L}$
+
+---
+
+
+```{r echo = FALSE}
+library(DT)
+
+#datatable(producao,
+#          extensions = 'Buttons', options = list(
+##     dom = 'Bfrtip',
+#     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')),
+#     width = "200px", height = "200px") %>% 
+#  formatStyle(columns = colnames(c(1,2,3,4)), fontSize = '20%')
+
+datatable(producao, options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'font-size': '15px', 'background-color': '#c2d1f0', 'color': '#fff'});",
+    "}"))) %>%  formatStyle(columns = colnames(.$x$data), `font-size` = '12px')
+```
+
+---
+
+# Graficando o PMg e o PMe (1 de 2)
+
+--
+
+- Vamos graficar o PMg e o PMe para entender suas trajetórias
+--
+```{r echo = FALSE, fig.height=4, fig.width=8}
+colors <- c("PMg" = "#e32d91", "PMe"="blue")
+
+producao %>% 
+  filter(L>1) %>% 
+  ggplot(aes(x=L))+
+  geom_line(aes(y= PMg, color="PMg"), size=1)+
+  geom_line(aes(y=PMe, color="PMe"), size=1)+
+  scale_color_manual(values=colors)+
+  labs(y="Produto Unitário",
+       color="Legend")
+```
+
+--
+- Conforme a figura, o PMg cresce até atingir um máximo e logo cair rapidamente, já o PMe apresenta um comportamento mais estável.
+
+---
+# Graficando o PMg e o PMe (2 de 2)
+
+- Uma propriedade interessante é que o máximo do PMe é exatamente o ponto onde cruza com o PMg.
+
+--
+--
+```{r echo = FALSE, fig.height=4, fig.width=8}
+
+PMe_empirical <- splinefun(x=producao$L,
+                             y=producao$PMe)
+
+optimal <- uniroot(function(x) PMg(x) - PMe_empirical(x), c(6,10))
+
+L_otimo <- optimal$root
+
+
+producao %>% 
+  filter(L>1) %>% 
+  ggplot(aes(x=L))+
+  geom_line(aes(y= PMg, color="PMg"), size=1)+
+  geom_line(aes(y=PMe, color="PMe"), size=1)+
+  annotate("point", x=6.86, y=PMe_empirical(6.86), size=3.5, color="black")+
+  labs(y="Produto Unitário",
+       color="Legend")+
+  scale_color_manual(values=colors)+
+  annotate("text", x=7, y=20, label = "(6.86, 18.46)")
+```
+
+---
+
+class: center, middle
+
+# Fim do Apêndice
+
+Prof. Mauricio Uriona Maldonado

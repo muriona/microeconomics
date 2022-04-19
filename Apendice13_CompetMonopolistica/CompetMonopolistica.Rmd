@@ -1,0 +1,285 @@
+---
+title: "Competição Monopolística"
+subtitle: "Apêndice - Aula 13"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE,
+        echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+```{r xaringan-themer, include=FALSE, warning = FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#e32d91",
+  header_font_google=google_font("Montserrat"),
+  text_font_google=google_font("Source Sans Pro"),
+  text_font_size = "24px"
+)
+```
+
+# Função de Demanda e Função de Receita
+
+- Vamos construir algumas funções de custo e receita. Vamos assumir que a função de demanda seja $Q = 40 - P$, isto significa que rearranjando os termos, a função de demanda seria igual a $P = 40 - Q$
+
+- A Receita Total será portanto $R = 40Q - Q^2$ pois a  $\frac{d}{dQ} 40Q - Q^2 = 40 - Q$ e a Função de Custo Total será $C = 50 + Q^2$
+
+- E Lucro será igual a $L = R - C$
+
+```{r echo = FALSE, warning=FALSE, message = FALSE}
+library(tidyverse)
+library(Deriv)
+library(directlabels)
+library(cowplot) # for arranging plots
+library(DT)
+library(wesanderson)
+
+demanda <- function(q) 40 - q
+receita <- function(q) (40*q) - q^2
+custo <- function(q) 50 + q^2
+lucro <- function(q) (40*q) - q^2 - 50 - q^2
+
+```
+
+```{r echo = FALSE}
+
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color,
+      x)
+  } else x
+}
+```
+
+
+---
+
+# 
+A Função de Demanda é a mesma que no Monopólio, pois cada empresa consegue definir seu próprio preço:
+
+```{r demanda, echo = FALSE, warning=FALSE, message = FALSE, fig.width=8, fig.height=4, dpi = 300}
+
+dados <- data.frame(q=seq(from=0, to=20, by=0.1))
+
+dados <- dados %>% 
+  mutate(D = demanda(q)) 
+
+dados %>% 
+  ggplot(aes(q, D))+
+  geom_line(size=1.2, color="#e32d91")+
+  theme_bw()+
+  labs(y="Preço (R$)", x="Quantidade (milhares de unidades)")+
+  scale_y_continuous(limits = c(0,50))
+
+```
+
+---
+
+
+# RMg e CMg e CMe
+
+Agora vamos calcular a RMg e CMg:
+
+- Como RMg é $\frac{d}{dQ}R$ então, $RMg = 40 - 2Q$
+
+- Da mesma forma, CMg é $\frac{d}{dQ}C$ então, $CMg = 2Q$
+
+- CMe será igual a $\frac{C}{Q}$  ou seja $CMe = \frac{50}{Q} + Q$
+
+---
+
+# RMg e CMg e CMe
+
+```{r , echo = FALSE, warning=FALSE, message = FALSE}
+RMg <- Deriv(receita, "q")
+
+CMg <- Deriv(custo, "q")
+
+CMe <- function(q) 50/q + q
+
+RMe <- function(q) receita(q)/q
+
+dados <- dados %>% 
+  mutate(CMg = CMg(q),
+         RMg = RMg(q),
+         CMe = round(CMe(q),1)) 
+
+datatable(dados, options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'font-size': '15px', 'background-color': '#d32e91', 'color': '#fff'});",
+    "}"))) %>%  formatStyle(columns = colnames(.$x$data), `font-size` = '12px')
+```
+
+---
+
+# 
+
+Agora vamos graficar:
+
+```{r dpi = 300, fig.width=8, fig.height=4, echo = FALSE, warning=FALSE, message = FALSE}
+
+plot <- dados %>% 
+  pivot_longer(-q, names_to = "Variaveis", values_to="Valor") %>% 
+  ggplot(aes(q,Valor, color=Variaveis))+
+  geom_line(size=1.2)+
+  scale_color_manual(values = wes_palette("Cavalcanti1"))+
+  geom_dl(aes(label = Variaveis), method = "smart.grid")+
+  labs(x="Quantidade (milhares de unidades)", y="R$")+
+  theme_bw()+
+    theme(legend.position = "none")+
+  scale_y_continuous(limits = c(0, 50))
+
+plot
+```
+
+```{r , echo = FALSE, warning=FALSE, message = FALSE}
+
+optimal_q <- uniroot(function(x) CMg(x) - RMg(x), 
+                     c(6,15))
+```
+
+--
+
+- Agora podemos calcular o ponto onde o lucro é maximizado, ou seja, a quantidade ótima é `r colorize(optimal_q$root, color="#e32d91")` e o preço ótimo será: `r colorize(demanda(optimal_q$root), color="#e32d91")`
+
+---
+# 
+
+Quantidade ótima e preço ótimo:
+
+```{r dpi = 300, fig.width=8, fig.height=4, echo = FALSE, warning=FALSE, message = FALSE}
+
+plot <- dados %>% 
+  pivot_longer(-q, names_to = "Variaveis", values_to="Valor") %>% 
+  ggplot(aes(q,Valor, color=Variaveis))+
+  geom_line(size=1.2)+
+  geom_segment(aes(x=10, y=0, xend = 10, yend = 30), linetype = "dashed", color = "#e32d91")+
+  geom_segment(aes(x=0, y=30, xend = 10, yend = 30), linetype = "dashed", color = "#e32d91")+
+  scale_color_manual(values = wes_palette("Cavalcanti1"))+
+  geom_dl(aes(label = Variaveis), method = "smart.grid")+
+  labs(x="Quantidade (milhares de unidades)", y="R$")+
+  theme_bw()+
+    theme(legend.position = "none")+
+  scale_y_continuous(limits = c(0, 50))
+
+plot
+```
+
+---
+# 
+
+Desta forma, o lucro será igual à área em cinza.
+
+```{r dpi = 300, fig.width=8, fig.height=4, echo = FALSE, warning=FALSE, message = FALSE}
+
+plot+
+  geom_rect(aes(xmin=0, xmax=optimal_q$root, 
+                ymin=15, 
+                ymax=demanda(optimal_q$root)),
+            fill = "gray", color = "gray",
+            alpha=0.02)
+```
+
+- Só que na competição monopolística existem outros concorrentes que entrarão neste mercado, pois os lucros somam R$ 150 mil
+
+---
+# 
+
+A Curva da demanda se descolacará para a esquerda, até tocar o CMe:
+
+```{r echo = FALSE, warning=FALSE, message = FALSE}
+demanda <- function(q) 20 - q
+
+dados <- dados %>% 
+  mutate(D = demanda(q)) 
+
+RMg <- function(q) 20 - 2 *q
+
+CMg <- Deriv(custo, "q")
+
+CMe <- function(q) 50/q + q
+
+RMe <- function(q) receita(q)/q
+
+dados <- dados %>% 
+  mutate(CMg = CMg(q),
+         RMg = RMg(q),
+         CMe = round(CMe(q),1)) 
+```
+
+
+
+```{r dpi = 300, fig.width=8, fig.height=4, echo = FALSE, warning=FALSE, message = FALSE}
+
+
+
+plot <- dados %>% 
+  pivot_longer(-q, names_to = "Variaveis", values_to="Valor") %>% 
+  ggplot(aes(q,Valor, color=Variaveis))+
+  geom_line(size=1.2)+
+  geom_point(aes(x=5,y=15),colour="black", size=5)+
+  geom_point(aes(x=5,y=15),colour="lightgray", size=2)+
+  geom_segment(aes(x=5, y=0, xend = 5, yend = 15), linetype = "dashed", color="#e32d91")+
+  geom_segment(aes(x=0, y=15, xend = 5, yend = 15), linetype = "dashed", color="#e32d91")+
+  scale_color_manual(values = wes_palette("Cavalcanti1"))+
+  geom_dl(aes(label = Variaveis), method = "smart.grid")+
+  labs(x="Quantidade (milhares de unidades)", y="R$")+
+  theme_bw()+
+    theme(legend.position = "none")+
+  scale_y_continuous(limits = c(0, 50))
+
+plot
+```
+
+- Neste ponto, será definido o novo Lucro no Longo Prazo igual a zero
+
+---
+# 
+Em outras palavras, a demanda vai se deslocar nesta proporção:
+
+```{r dpi = 300, fig.width=8, fig.height=4, echo = FALSE, warning=FALSE, message = FALSE}
+demanda <- function(q) 40 - q
+
+demanda2 <- function(q) 20 - q
+
+dados <- dados %>% 
+  mutate(D = demanda(q),
+         D_2 = demanda2(q)) %>% 
+  select(-3:-5)
+
+dados %>% 
+  pivot_longer(-q) %>% 
+  ggplot(aes(q, value, color=name, labels=name))+
+  geom_line(size=1.2)+
+  scale_color_manual(values = wes_palette("Cavalcanti1"))+
+  geom_dl(aes(label = name), method = "smart.grid")+
+  labs(x="Quantidade (milhares de unidades)", y="R$")+
+  theme_bw()+
+    theme(legend.position = "none")+
+  scale_y_continuous(limits = c(0, 50))
+```
+
+
+---
+
+class: center, middle
+
+# Fim do Apêndice
+
+Prof. Mauricio Uriona Maldonado

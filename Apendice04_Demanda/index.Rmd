@@ -1,0 +1,166 @@
+---
+title: "Estimação Empírica da Demanda"
+subtitle: "Apêndice - Aula 04 - Demanda"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+
+# Estimação empírica da demanda
+
+- A forma mais direta de obter informações a respeito da demanda é por meio de entrevistas, nas quais os consumidores sejam questionados sobre a quantidade de uma mercadoria que estariam dispostos a comprar por um determinado preço.
+
+--
+
+Porém, é possível que os consumidores não disponham de informações suficientes, não tenham interesse em responder, ou desejem induzir o entrevistador a conclusões equivocadas.
+
+--
+
+Este é um problema para a estimação empírica, por isso, uma alternativa é a abordagem estatística
+
+
+---
+
+# Abordagem Estatística
+
+- Quando aplicada adequadamente, a abordagem estatística à estimativa da demanda permite identificar os efeitos de diversas variáveis sobre as quantidades demandadas de um produto.
+
+--
+
+- A regressão por “mínimos quadrados” é um possível método.
+
+--
+
+- Vamos assumir os dados de demanda de morango a seguir:
+
+---
+# Dados do Morango
+
+```{r, echo = FALSE}
+library(knitr)
+dados <- data.frame(Ano = c(1988, 1989, 1990, 1991, 1992, 1993,
+                            1994, 1995, 1996),
+                    Quantidade = c(4,7,8,13,16,15,19,20,22),
+                    Preco=c(24,20,17,17,10,15,12,9,5),
+                    Renda=c(10,10,10,17,17,17,20,20,20))
+
+kable(dados)
+```
+
+
+---
+
+# Graficando os dados
+
+- Vamos graficar os dados de venda de Morango com relação ao Preço.
+
+--
+
+```{r, echo=FALSE, warning= FALSE, message = FALSE, fig.width=8, fig.height=6}
+
+library(tidyverse)
+dados %>% 
+  ggplot(aes(Quantidade, Preco))+
+  geom_point(size=6, color="blue")+
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"))
+```
+---
+
+# Calculando a regressão por mínimos quadrados
+
+- Vamos a calcular duas regressões
+
+--
+
+- A primeira função de Demanda `(modelo 1)` dependerá apenas do Preço, na forma: $Q=a + bP$
+
+--
+
+- A segunda função de Demanda `(modelo 2)` dependerá tanto do Preço quanto da Renda, a forma: $Q=a + bP +cR$
+
+
+```{r, echo = FALSE, message = FALSE}
+library(broom)
+model <- lm(Quantidade ~ Preco, data=dados)
+model2 <- lm(Quantidade ~ Preco + Renda, data=dados)
+results <- tidy(model)
+results2 <- tidy(model2)
+
+a <- results$estimate[1]
+b <- results$estimate[2]
+
+library(stargazer)
+
+
+#pander::pander(model, model2, type="html")
+```
+
+---
+# Resultado das regressões
+
+```{r echo=FALSE, results='asis'}
+stargazer(model, model2, type ="html", single.row=T)
+
+```
+
+---
+
+# Resultado das regressões
+
+- O modelo 1: $Q=a + bP$ é portanto: Q = `28,17` - `1,0`P
+
+--
+
+- O modelo está de acordo com a teoria microeconômica, pois o coeficiente `b` é negativo devido a relação entre Preço e Quantidade ser inversa.
+
+--
+
+- O modelo 2: $Q=a + bP +cR$ é portanto: Q=`8,07` - `0,491`P + `0,813`R
+
+--
+
+- O modelo 2 também está de acordo com a teoria microecônomica, pois além do coeficiente `b` ser negativo, o coeficiente `c` é positivo. Isto é, a maior Renda, maior Quantidade será demandada.
+
+---
+
+# Graficando o modelo 1
+
+O modelo 1 então, pode ser graficado a seguir:
+
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, fig.width=8, fig.height=6}
+
+dados %>% 
+  ggplot(aes(Quantidade, Preco))+
+  geom_point(size=6, color="blue")+
+  geom_smooth(se = FALSE, method = "lm", color = "red")+
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"))
+```
+
+
+---
+
+class: center, middle
+
+# Fim do Apêndice
+
+Prof. Mauricio Uriona Maldonado
