@@ -1,6 +1,6 @@
 ---
 title: "Maximização da Escolha do Consumidor"
-subtitle: "Apêndice 2 - Aula 04 - Demanda Individual"
+subtitle: "Apêndice 2 - Aula 03 - Comportamento do Consumidor"
 author: "Prof. Mauricio Uriona Maldonado"
 institute: "EPS 5222"
 date: "`r format(Sys.Date(), '%d/%m/%Y')`"
