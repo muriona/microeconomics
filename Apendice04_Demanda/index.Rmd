@@ -62,6 +62,9 @@ dados <- data.frame(Ano = c(1988, 1989, 1990, 1991, 1992, 1993,
 kable(dados)
 ```
 
+```{r share-again, echo=FALSE}
+xaringanExtra::use_share_again()
+```
 
 ---
 
