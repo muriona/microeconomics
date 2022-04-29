@@ -37,15 +37,17 @@ xaringanExtra::use_share_again()
 
 --
 
-- Uma fatia de pizza custa R$ 3. Vamos usar `x` para denotá-la
+- Uma fatia de pizza custa RS 3. Vamos usar $x$ para denotá-la
 
 --
 
-- Um pote de iogurte custa R$ 1,50 e o denotaremos com a letra `y`
+- Um pote de iogurte custa RS 1,50 e o denotaremos com a letra $y$
 
 --
 
-- A felicidade que o Paulo ganha ao consumir pizza e iogurte pode ser modelada pela função de utilidade: $U(x,y) = x^20,25y$
+- Vamos a assumir que a felicidade que o Paulo ganha ao consumir pizza e iogurte pode ser modelada pela função de utilidade: 
+
+$$U(x,y) = x^20,25y$$
 
 ---
 
