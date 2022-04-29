@@ -8,6 +8,11 @@
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css/rladies-fonts.css" rel="stylesheet" />
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="libs/shareon/shareon.min.js"></script>
+    <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
   </head>
   <body>
     <textarea id="source">
@@ -26,10 +31,12 @@ class: center, middle, inverse, title-slide
 ### EPS 5222
 ]
 .date[
-### 19/04/2022
+### 29/04/2022
 ]
 
 ---
+
+
 
 
 
@@ -64,9 +71,12 @@ class: center, middle, inverse, title-slide
 
 - Para graficar a R.O. devemos estimar quantas pizzas e iogurtes o Paulo iria consumir se gastasse seu dinheiro em apenas um deles
 
+
+
+
 --
 
-- `\(y=-2x+30\)`
+`$$y=-2x+30$$`
 
 --
 
@@ -76,7 +86,7 @@ class: center, middle, inverse, title-slide
 
 # Passo 1: Graficar a Reta Orçamentária (2/2)
 
-![](index_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -111,7 +121,75 @@ utility_solved &lt;- Solve(utility_u(x,y)==U,y)
 
 # Passo 2: Graficar as curvas de indiferença
 
-![](index_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+---
+
+# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O.
+
+
+
+Conforme o visto em sala de aula, a TMS será:
+
+`$$\frac{\partial u /\partial x}{\partial u /\partial y} = \frac{0.5y}{0.25x}=TMS$$`
+
+Esta equação indica a pendente da Curva de Indiferença para qualquer valor de `\(x\)` e `\(y\)`, mas conforme as expressões matemáticas apresentadas em aula, a TMS também é igual a:
+
+`$$TMS=\frac{Preço_x}{Preço_y}=\frac{3}{1,5}$$`
+Igualando ambas expressões, e rearranjando-as em função de `\(y\)`:
+
+
+
+`$$y=-\frac{-0.75x}{0.75}$$`
+
+---
+# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O.
+
+
+
+Com base nestas informações, podemos encontrar as quantidades ótimas de `\(x\)` e `\(y\)` onde ambas as curvas (RO) e Indiferença se encontram. Vamos fazer isso usando o `\(R\)`:
+
+
+```r
+# encontrar a ótima quantidade de x
+optimal_x &lt;- uniroot(function(x) budget(x) - marginal_utility(x), c(0, 100))$root
+optimal_x
+```
+
+```
+## [1] 10
+```
+
+```r
+#substituir a ótima quantidade de x em y
+optimal_y &lt;- budget(optimal_x)
+optimal_y
+```
+
+```
+## [1] 10
+```
+
+```r
+# Com ambas quantidades ótimas, calcular o valor máximo de Utilidade:
+max_utility &lt;- utility_u(optimal_x, optimal_y)
+
+max_utility
+```
+
+```
+## [1] 250
+```
+
+---
+# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O.
+
+- Ou seja, o valor ótimo de consumo é 250 unidades de utilidade e as quantidades de `\(x=10\)` e `\(y=10\)` unidades respectivamente. 
+
+- Será neste ponto que ambas as curvas encontrar-se-ão:
+
+&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
