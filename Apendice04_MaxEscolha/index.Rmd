@@ -244,23 +244,21 @@ max_utility
 ---
 # Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O.
 
-- Ou seja, o valor ótimo de consumo é 250 unidades de utilidade e as quantidades de $x=10$ e $y=10$ unidades respectivamente. 
+- Ou seja, o valor ótimo de consumo é 250 unidades de utilidade e as quantidades de $x=10$ e $y=10$ unidades respectivamente. Será neste ponto que ambas as curvas encontrar-se-ão:
 
-- Será neste ponto que ambas as curvas encontrar-se-ão:
-
-```{r echo = FALSE, fig.height=4, fig.width=4, warning=FALSE, fig.align='center'}
+```{r echo = FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center'}
 ggplot() + 
   # Budget line
   stat_function(data = tibble(x = 0:15), aes(x = x),
-                fun = budget, color = "#638ccc", size = 1.5) +
+                fun = budget, color = "#e32d91", size = 1.5) +
   annotate(geom = "label", x = 2.5, y = budget(2.5), 
-           label = "R.O.", color = "#638ccc") +
+           label = "R.O.", color = "#e32d91") +
   # Best indifference curve
   stat_function(data = tibble(x = 1:15), aes(x = x),
                 fun = utility_y, args = list(my_U = max_utility),
-                color = "#ca5670", size = 1.5) +
+                color = "darkblue", size = 1.5) +
   annotate(geom = "label", x = 7, y = utility_y(7, max_utility), 
-           label = paste0("U = ", max_utility), color = "#ca5670") +
+           label = paste0("U = ", max_utility), color = "darkblue") +
   # Dotted lines to show x and y
   annotate(geom = "segment", x = 0, y = optimal_y, xend = optimal_x, yend = optimal_y,
            linetype = "dashed", color = "grey50", size = 0.5) +
@@ -273,7 +271,9 @@ ggplot() +
   scale_x_continuous(expand = c(0, 0), breaks = seq(0, 15, 5)) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 30, 10)) +
   coord_cartesian(xlim = c(0, 16), ylim = c(0, 32)) +
-  theme_classic()
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"))
 ```
 
 
