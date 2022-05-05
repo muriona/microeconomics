@@ -41,7 +41,7 @@ total_budget <- 80
 
 --
 
-- O orçamento total é de `r total_budget` R$
+- O orçamento total é de RS `r total_budget`, denotado como $m$
 
 --
 
@@ -193,7 +193,7 @@ ggplot() +
 
 # Passo 2: Graficar em 3D
 
-As curvas de indiferença são, na verdade, um plano.
+- As curvas de indiferença são, na verdade, um plano.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 library(plotly)
@@ -226,7 +226,7 @@ plot_ly() %>%
 
 ---
 
-# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O. (1 de 3)
+# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O. (1 de 4)
 
 ```{r echo=FALSE}
 mu_x <- deriv(utility_u(x, y), x)
@@ -257,7 +257,7 @@ tangente <- Solve(paste(Simplify(mu_x / mu_y), "==", price_x, "/", price_y), y)
 $$y=-\frac{x}{2}$$
 
 ---
-# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O. (2 de 3)
+# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O. (2 de 4)
 
 ```{r echo=FALSE}
 marginal_utility <- function(my_x) {
@@ -268,7 +268,25 @@ marginal_utility <- function(my_x) {
 
 ```
 
-Com base nestas informações, podemos encontrar as quantidades ótimas de $x$ e $y$ onde ambas as curvas (RO) e Indiferença se encontram. Vamos fazer isso usando o $R$:
+
+Matematicamente, o problema refere-se a uma maximização com restrição do tipo:
+
+$$\max u(x,y)$$
+$$\textrm s.a.: p_xx+p_yy=m $$
+
+- Com base nestas informações, podemos encontrar as quantidades ótimas de $x$ e $y$ onde ambas as curvas (RO) e Indiferença se encontram.
+
+--
+
+- A abordagem recomendada é o uso dos multiplicadores de Lagrange, resolvendo com derivadas parciais a equação:
+
+$$L=u(x,y)+\lambda[m-p_xx-p_yy]$$
+
+---
+# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O. (3 de 4)
+
+
+- Nós iremos usar o $R$ para resolver o problema de maximização:
 
 ```{r}
 # encontrar a ótima quantidade de x
