@@ -24,83 +24,88 @@ options(htmltools.dir.version = FALSE)
 xaringanExtra::use_share_again()
 ```
 
+```{r echo=FALSE}
+price_x <- 1
+
+price_y <- 2
+
+total_budget <- 80
+```
+
 
 # Maximização da escolha do consumidor
 
-- Vamos assumir que o Paulo deve decidir sobre a melhor combinação de pizza e iogurte.
+- Vamos assumir que o Paulo deve decidir sobre a melhor combinação de alimento e transporte público.
 
 - A informação que ele tem:
 
 --
 
-- O orçamento total é de 45 R$
+- O orçamento total é de `r total_budget` R$
 
 --
 
-- Uma fatia de pizza custa RS 3. Vamos usar $x$ para denotá-la
+- Uma passagem de ônibus custa RS `r price_x`. Vamos usar $x$ para denotá-la
 
 --
 
-- Um pote de iogurte custa RS 1,50 e o denotaremos com a letra $y$
+- Um kg de alimento custa RS `r price_y` e o denotaremos com a letra $y$
 
 --
 
-- Vamos a assumir que a felicidade que o Paulo ganha ao consumir pizza e iogurte pode ser modelada pela função de utilidade: 
+- Vamos a assumir que a felicidade que o Paulo ganha ao consumir alimento e transporte público (passagens de ônibus) pode ser modelada pela função de utilidade: 
 
-$$U(x,y) = 0,25x^2y$$
+$$U(x,y) = xy$$
 
 ---
 
 # Passo 1: Graficar a Reta Orçamentária (1/2)
 
-- Para graficar a R.O. devemos estimar quantas pizzas e iogurtes o Paulo iria consumir se gastasse seu dinheiro em apenas um deles
+- Para graficar a R.O. devemos estimar quantas passagens de ônibus e quantas kg. de alimento o Paulo iria consumir se gastasse seu dinheiro em apenas um deles
 
 ```{r echo=FALSE}
 
-price_x <- 3
+n_x <- total_budget/price_x
 
-price_y <- 1.5
+n_y <- total_budget/price_y
 
-total_budget <- 45
-
-
-
+slope <- - n_y/n_x
 ```
 
 
 --
 
-$$y=30-2x$$
+$$y=40-0.5x$$
 
 --
 
-- Isso significa ou 15 pizzas ou 30 iougurtes. Portanto, a R.O. será:
+- Isso significa ou `r n_x` kg de alimento ou `r n_y` kg de vestuario. Portanto, a R.O. será:
 
 ---
 
 # Passo 1: Graficar a Reta Orçamentária (2/2)
 
-```{r, message=FALSE, echo = FALSE, fig.width=10, fig.height=6,fig.retina=2}
+```{r, message=FALSE, echo = FALSE, fig.width=6, fig.height=6, fig.retina=2}
 
 library(tidyverse)
 
 
-budget <- function(x) (-2 * x) + 30
+budget <- function(x) (-0.5 * x) + 40
 
 ggplot() + 
   # Draw the line
-  stat_function(data = tibble(x = 0:15), aes(x = x),
+  stat_function(data = tibble(x = 0:80), aes(x = x),
                 fun = budget, color = "#e32d91", 
                 size = 1.5) +
   # Add a label
-  annotate(geom = "label", x = 2.5, y = budget(2.5), 
+  annotate(geom = "label", x = 15, y = budget(15), 
            label = "R.O.", color = "#e32d91") +
-  labs(x = "Fatias de pizza", 
-       y = "Potes de iogurte") +
+  labs(x = "passagens de ônibus", 
+       y = "kg de alimento") +
   # Make the axes go all the way to zero
-  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 15, 5)) +
-  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 30, 10)) +
-  coord_cartesian(xlim = c(0, 16), ylim = c(0, 32))+
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 100, 10)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 60, 10)) +
+  coord_cartesian(xlim = c(0, 100), ylim = c(0, 60))+
   theme_classic()+
   theme(axis.text=element_text(size=20),
         axis.title=element_text(size=16, face="bold"))
@@ -110,7 +115,7 @@ ggplot() +
 ---
 # Passo 2: Graficar as curvas de indiferença
 
-- Lembrando que a função de utilidade do Paulo era $U(x,y)=0,25x^2y$
+- Lembrando que a função de utilidade do Paulo era $U(x,y)=xy$
 
 --
 
@@ -124,7 +129,7 @@ x <- Sym("x")
 y <- Sym("y")
 U <- Sym("U")
 
-utility_u <- function(x, y) x^2 * (0.25 * y)
+utility_u <- function(x, y) x * y
 utility_solved <- Solve(utility_u(x,y)==U,y)
 
 ```
@@ -133,13 +138,13 @@ utility_solved <- Solve(utility_u(x,y)==U,y)
 
 # Passo 2: Graficar as curvas de indiferença
 
-- De acordo com o resultado do `R`, a equação em função de `x`e `U` é: $y=U/0.25x$
+- De acordo com o resultado do `R`, a equação em função de $x$ e $U$ é: $y=U/x$ 
 
 ---
 
 # Passo 2: Graficar as curvas de indiferença
 
-```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=6, fig.retina=2}
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=6, fig.retina=2}
 
 
 utility_y <- function(my_x, my_U) {
@@ -152,33 +157,33 @@ utility_y <- function(my_x, my_U) {
 
 ggplot() + 
   # Budget line
-  stat_function(data = tibble(x = 0:15), aes(x = x),
-                fun = budget, color = "#e32d91", size = 1.5) +
-  annotate(geom = "label", x = 2.5, y = budget(2.5), 
-           label = "R.O.", color = "#e32d91") +
+#  stat_function(data = tibble(x = 0:80), aes(x = x),
+#                fun = budget, color = "#e32d91", size = 1.5) +
+#  annotate(geom = "label", x = 2.5, y = budget(2.5), 
+#           label = "R.O.", color = "#e32d91") +
   # U = 10
-  stat_function(data = tibble(x = 1:15), aes(x = x),
-                fun = utility_y, args = list(my_U = 10),
-                color = "#ab62c0", size = 1.5) +
-  annotate(geom = "label", x = 2.5, y = utility_y(2.5, 10), 
-           label = "U = 10", color = "#ab62c0") +
-  # U = 100
-  stat_function(data = tibble(x = 1:15), aes(x = x),
-                fun = utility_y, args = list(my_U = 100),
-                color = "#ca5670", size = 1.5) +
-  annotate(geom = "label", x = 7, y = utility_y(7, 100), 
-           label = "U = 100", color = "#ca5670") +
-  # U = 500
-  stat_function(data = tibble(x = 1:15), aes(x = x),
+ stat_function(data = tibble(x = 1:100), aes(x = x),
                 fun = utility_y, args = list(my_U = 500),
+                color = "#ab62c0", size = 1.5) +
+  annotate(geom = "label", x = 30, y = utility_y(40, 500), 
+           label = "U = 500", color = "#ab62c0") +
+  # U = 1000
+  stat_function(data = tibble(x = 1:100), aes(x = x),
+                fun = utility_y, args = list(my_U = 1000),
+                color = "#ca5670", size = 1.5) +
+  annotate(geom = "label", x = 40, y = utility_y(40, 1000), 
+           label = "U = 1000", color = "#ca5670") +
+  # U = 1500
+  stat_function(data = tibble(x = 1:100), aes(x = x),
+                fun = utility_y, args = list(my_U = 1500),
                 color = "#c57c3c", size = 1.5) +
-  annotate(geom = "label", x = 12.5, y = utility_y(12.5, 500), 
-           label = "U = 500", color = "#c57c3c") +
-  labs(x = "Fatias de pizza", 
-       y = "Potes de iogurte") +
-  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 15, 5)) +
-  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 30, 10)) +
-  coord_cartesian(xlim = c(0, 16), ylim = c(0, 32)) +
+  annotate(geom = "label", x = 50, y = utility_y(50, 1500), 
+           label = "U = 1500", color = "#c57c3c") +
+  labs(x = "passagens de ônibus", 
+       y = "kg de alimento") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 100, 10)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 60, 10)) +
+  coord_cartesian(xlim = c(0, 100), ylim = c(0, 60)) +
   theme_classic()+
   theme(axis.text=element_text(size=20),
         axis.title=element_text(size=16, face="bold"))
@@ -186,10 +191,43 @@ ggplot() +
 
 ---
 
-# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O.
+# Passo 2: Graficar em 3D
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(plotly)
+library(akima)
+
+xseq <- rep(seq(1,80), time=80)
+yseq <- rep(seq(1,80), time=1, each=80)
+
+data <- data.frame(xseq, yseq)
+
+data <- data %>% 
+  mutate(z=xseq*yseq)
+
+s <- interp(x=data$xseq, y=data$yseq, z=data$z)
+
+plot_ly() %>% 
+  add_surface(x=s$x, y=s$y, z=s$z,
+              contours= list(
+                z = list(
+                       show=TRUE,
+                       usecolormap=TRUE,
+                       highlightcolor="#ff0000",
+                       project=list(z=TRUE)
+              ),
+              size=90
+              ))
+  #add_contour(z=s$z)
+```
+
+
+---
+
+# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O. (1 de 3)
 
 ```{r echo=FALSE}
-
 mu_x <- deriv(utility_u(x, y), x)
 
 mu_y <- deriv(utility_u(x, y), y)
@@ -200,11 +238,11 @@ mux_muy <- Simplify(mu_x / mu_y)
 
 Conforme o visto em sala de aula, a TMS será:
 
-$$\frac{\partial u /\partial x}{\partial u /\partial y} = \frac{0.5y}{0.25x}=TMS$$
+$$TMS=\frac{\partial U /\partial x}{\partial U /\partial y} = \frac{y}{x}$$
 
 Esta equação indica a pendente da Curva de Indiferença para qualquer valor de $x$ e $y$, mas conforme as expressões matemáticas apresentadas em aula, a TMS também é igual a:
 
-$$TMS=\frac{Preço_x}{Preço_y}=\frac{3}{1,5}$$
+$$TMS=\frac{Preço_x}{Preço_y}=\frac{1}{2}$$
 Igualando ambas expressões, e rearranjando-as em função de $y$:
 
 ```{r echo=FALSE}
@@ -215,10 +253,10 @@ tangente <- Solve(paste(Simplify(mu_x / mu_y), "==", price_x, "/", price_y), y)
 
 ```
 
-$$y=-\frac{-0.75x}{0.75}$$
+$$y=-\frac{x}{2}$$
 
 ---
-# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O.
+# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O. (2 de 3)
 
 ```{r echo=FALSE}
 marginal_utility <- function(my_x) {
@@ -245,22 +283,23 @@ max_utility
 ```
 
 ---
-# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O.
+# Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O. (3 de 3)
 
-- Ou seja, o valor ótimo de consumo é 250 unidades de utilidade e as quantidades de $x=10$ e $y=10$ unidades respectivamente. Será neste ponto que ambas as curvas encontrar-se-ão:
+- Ou seja, o valor ótimo de consumo é `r max_utility` unidades de utilidade e as quantidades de $x$ = `r optimal_x` e $y=$ `r optimal_y` unidades respectivamente. Será neste ponto que ambas as curvas encontrar-se-ão:
 
 ```{r echo = FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
+
 ggplot() + 
   # Budget line
-  stat_function(data = tibble(x = 0:15), aes(x = x),
+  stat_function(data = tibble(x = 0:80), aes(x = x),
                 fun = budget, color = "#e32d91", size = 1.5) +
   annotate(geom = "label", x = 2.5, y = budget(2.5), 
            label = "R.O.", color = "#e32d91") +
   # Best indifference curve
-  stat_function(data = tibble(x = 1:15), aes(x = x),
+  stat_function(data = tibble(x = 1:100), aes(x = x),
                 fun = utility_y, args = list(my_U = max_utility),
                 color = "darkblue", size = 1.5) +
-  annotate(geom = "label", x = 7, y = utility_y(7, max_utility), 
+  annotate(geom = "label", x = 20, y = utility_y(20, max_utility), 
            label = paste0("U = ", max_utility), color = "darkblue") +
   # Dotted lines to show x and y
   annotate(geom = "segment", x = 0, y = optimal_y, xend = optimal_x, yend = optimal_y,
@@ -269,11 +308,11 @@ ggplot() +
            linetype = "dashed", color = "grey50", size = 0.5) +
   # Dot at optimal point
   annotate(geom = "point", x = optimal_x, y = optimal_y, size = 3) +
-  labs(x = "Fatias de pizza", 
-       y = "Potes de iogurte") +
-  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 15, 5)) +
-  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 30, 10)) +
-  coord_cartesian(xlim = c(0, 16), ylim = c(0, 32)) +
+  labs(x = "passagens de ônibus", 
+       y = "kg de alimento") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 100, 10)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 40, 10)) +
+  coord_cartesian(xlim = c(0, 100), ylim = c(0, 50)) +
   theme_classic()+
   theme(axis.text=element_text(size=20),
         axis.title=element_text(size=16, face="bold"))
