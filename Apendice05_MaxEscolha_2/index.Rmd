@@ -45,15 +45,21 @@ total_budget <- 80
 
 --
 
-- Uma passagem de ônibus custa RS `r price_x`. Vamos usar $x$ para denotá-la
+- Uma passagem de ônibus custa $p_x=$ RS `r price_x`. Vamos usar $x$ para denotar a quantidade de passagens consumidas.
 
 --
 
-- Um kg de alimento custa RS `r price_y` e o denotaremos com a letra $y$
+- Um kg de alimento custa $p_y=$ RS `r price_y` e denotaremos com a letra $y$ a quantidade de kg de alimento consumidas.
 
 --
 
-- Vamos a assumir que a felicidade que o Paulo ganha ao consumir alimento e transporte público (passagens de ônibus) pode ser modelada pela função de utilidade: 
+- A relação entre esses três parâmetros pode ser representada como:
+
+$$m=p_xx+p_yy$$
+
+--
+
+- Por fim, vamos a assumir que a felicidade que o Paulo ganha ao consumir alimento e transporte público (passagens de ônibus) pode ser modelada pela função de utilidade: 
 
 $$U(x,y) = xy$$
 
@@ -61,7 +67,11 @@ $$U(x,y) = xy$$
 
 # Passo 1: Graficar a Reta Orçamentária (1/2)
 
-- Para graficar a R.O. devemos estimar quantas passagens de ônibus e quantas kg. de alimento o Paulo iria consumir se gastasse seu dinheiro em apenas um deles
+- Para graficar a R.O. devemos estimar quantas passagens de ônibus e quantas kg. de alimento o Paulo iria consumir se gastasse seu dinheiro em apenas um deles.
+
+--
+
+- Também podemos partir da equação da reta de orçamento: $m=p_xx+p_yy$ e rearranjar em função de y: $$y=\frac{m}{p_y}-\frac{p_x}{p_y}x$$
 
 ```{r echo=FALSE}
 
@@ -75,11 +85,13 @@ slope <- - n_y/n_x
 
 --
 
+- Substituindo para nosso caso, a R.O. fica como:
+
 $$y=40-0.5x$$
 
 --
 
-- Isso significa ou `r n_x` kg de alimento ou `r n_y` kg de vestuario. Portanto, a R.O. será:
+- Isso significa ou `r n_x` kg de alimento ou `r n_y` kg de vestuario ou um mix entre ambos. Portanto, a R.O. será:
 
 ---
 
@@ -336,6 +348,40 @@ ggplot() +
   theme(axis.text=element_text(size=20),
         axis.title=element_text(size=16, face="bold"))
 ```
+
+---
+
+class: center, middle
+
+# Agora o Paulo deve escolher entre pizza e iogurte!
+
+
+---
+
+# A informação que ele tem:
+
+--
+
+- O orçamento total é de $m=$ 45 R$
+
+--
+
+- Uma fatia de pizza custa $p_x=$ 3 R$.
+
+--
+
+- Um pote de iogurte custa $p_y=$ 1,50 R$.
+
+--
+
+- E a função de utilidade do Paulo é: 
+
+$$U(x,y) = 0,25x^2y$$
+---
+
+- Calcule a cesta de pizza e iogurte que maximiza a utilidade do Paulo.
+
+---
 
 
 ---
