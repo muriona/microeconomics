@@ -193,8 +193,9 @@ ggplot() +
 
 # Passo 2: Graficar em 3D
 
+As curvas de indiferença são, na verdade, um plano.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 library(plotly)
 library(akima)
 
