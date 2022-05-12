@@ -1,0 +1,550 @@
+---
+title: "Demanda Individual e de Mercado"
+subtitle: "Apêndice 3 - Aula 04 - Demanda Individual"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: false
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r share-again, echo=FALSE}
+xaringanExtra::use_share_again()
+```
+
+```{r echo=FALSE}
+price_x <- 1
+
+price_y <- 2
+
+total_budget <- 80
+```
+
+
+# Lembrando o caso do Paulo
+
+- O Paulo deve decidir sobre a melhor combinação de alimento e transporte público.
+
+- A informação que ele tem:
+
+--
+
+- O orçamento total é de RS `r total_budget`, denotado como $m$
+
+--
+
+- Uma passagem de ônibus custa $p_x=$ RS `r price_x`. Vamos usar $x$ para denotar a quantidade de passagens consumidas.
+
+--
+
+- Um kg de alimento custa $p_y=$ RS `r price_y` e denotaremos com a letra $y$ a quantidade de kg de alimento consumidas.
+
+--
+
+- A relação entre esses três parâmetros pode ser representada como:
+
+$$m=p_xx+p_yy$$
+
+--
+
+- Por fim, a função de utilidade do Paulo ao consumir alimento e transporte público (passagens de ônibus) é: 
+
+$$U(x,y) = xy$$
+
+---
+
+# A Reta Orçamentária
+
+- Para graficar a R.O. devemos estimar quantas passagens de ônibus e quantas kg. de alimento o Paulo iria consumir se gastasse seu dinheiro em apenas um deles.
+
+--
+
+- Também podemos partir da equação da reta de orçamento: $m=p_xx+p_yy$ e rearranjar em função de y: $$y=\frac{m}{p_y}-\frac{p_x}{p_y}x$$
+
+```{r echo=FALSE}
+
+n_x <- total_budget/price_x
+
+n_y <- total_budget/price_y
+
+slope <- - n_y/n_x
+
+
+```
+
+
+--
+
+- Substituindo para nosso caso, a R.O. fica como:
+
+$$y=40-0.5x$$
+
+--
+
+- Isso significa ou `r n_x` kg de alimento ou `r n_y` kg de vestuario ou um mix entre ambos.
+
+---
+
+# Graficando a Maximização da Escolha
+
+```{r, message=FALSE, echo = FALSE, fig.width=6, fig.height=6, fig.retina=2}
+
+library(tidyverse)
+
+
+budget <- function(x) (slope * x) + (n_y)
+
+
+```
+
+
+```{r echo=FALSE}
+library(Ryacas0)
+
+# criando variáveis Yacas
+x <- Sym("x")
+y <- Sym("y")
+U <- Sym("U")
+
+utility_u <- function(x, y) x * y
+utility_solved <- Solve(utility_u(x,y)==U,y)
+
+```
+
+
+```{r utility-function, echo = FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=6, fig.retina=2}
+
+
+utility_y <- function(my_x, my_U) {
+  solved <- Solve(utility_u(x,y)==U,y)
+  solution <- Eval(solved, list(x = my_x, U = my_U))
+  # Regex incantation to extract numbers
+  as.numeric(str_extract(solution, "-?[0-9]\\d*(\\.\\d+)?"))
+}
+
+
+```
+
+
+```{r echo=FALSE}
+mu_x <- deriv(utility_u(x, y), x)
+
+mu_y <- deriv(utility_u(x, y), y)
+
+mux_muy <- Simplify(mu_x / mu_y)
+
+```
+
+
+```{r echo=FALSE}
+
+# For unknown reasons, yacas works better with (3 / 1.5) instead of 2, so we
+# build the string with price_x and price_y instead of price_x/price_y
+tangente <- Solve(paste(Simplify(mu_x / mu_y), "==", price_x, "/", price_y), y)
+
+```
+
+
+```{r echo=FALSE}
+marginal_utility <- function(my_x) {
+  mux_muy_price <- Solve(paste(mux_muy, "==", price_x, "/", price_y), y)
+  solution <- Eval(mux_muy_price, list(x = my_x))
+  as.numeric(str_extract(solution, "-?[0-9]\\d*(\\.\\d+)?"))
+}
+
+```
+
+
+```{r echo = FALSE}
+# encontrar a ótima quantidade de x
+optimal_x <- uniroot(function(x) budget(x) - marginal_utility(x), c(0, 100))$root
+
+#substituir a ótima quantidade de x em y
+optimal_y <- budget(optimal_x)
+
+# Com ambas quantidades ótimas, calcular o valor máximo de Utilidade:
+max_utility <- utility_u(optimal_x, optimal_y)
+
+
+```
+
+
+```{r echo = FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
+
+ggplot() + 
+  # Budget line
+  stat_function(data = tibble(x = 0:80), aes(x = x),
+                fun = budget, color = "#e32d91", size = 1.5) +
+  annotate(geom = "label", x = 2.5, y = budget(2.5), 
+           label = "R.O.", color = "#e32d91") +
+  # Best indifference curve
+  stat_function(data = tibble(x = 1:100), aes(x = x),
+                fun = utility_y, args = list(my_U = max_utility),
+                color = "darkblue", size = 1.5) +
+  annotate(geom = "label", x = 20, y = utility_y(20, max_utility), 
+           label = paste0("U = ", max_utility), color = "darkblue") +
+  # Dotted lines to show x and y
+  annotate(geom = "segment", x = 0, y = optimal_y, xend = optimal_x, yend = optimal_y,
+           linetype = "dashed", color = "grey50", size = 0.5) +
+  annotate(geom = "segment", x = optimal_x, y = 0, xend = optimal_x, yend = optimal_y,
+           linetype = "dashed", color = "grey50", size = 0.5) +
+  # Dot at optimal point
+  annotate(geom = "point", x = optimal_x, y = optimal_y, size = 3) +
+  labs(x = "passagens de ônibus", 
+       y = "kg de alimento") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 100, 10)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 40, 10)) +
+  coord_cartesian(xlim = c(0, 100), ylim = c(0, 50)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"))
+```
+
+---
+
+# Porém, o preço das passagens pode mudar
+
+
+```{r echo=FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
+
+n_x <- total_budget/price_x
+
+n_y <- total_budget/price_y
+
+slope <- - n_y/n_x
+
+#price_x_multiple <- rep(seq(0.1,3,by=0.1), each=160)
+
+budget_change <- function(px,x) {
+  (-px/price_y)*x + n_y
+}
+
+price_x_multiple <- rep(1:4, times=160)
+
+#data2 <- tibble(x=rep(1:160, times=25),
+#                px=price_x_multiple,
+#                y=budget_change(px,x))
+
+
+data <- tibble(x=rep(1:100, times=4),
+               px=rep(1:4, each=100),
+               y=budget_change(px,x))
+
+retas <- data %>% 
+  ggplot(aes(x,y, color=factor(px)))+
+  geom_line(size=1.5)+
+  labs(x = "passagens de ônibus", 
+       y = "kg de alimento") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 100, 10)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 40, 10)) +
+  coord_cartesian(xlim = c(0, 100), ylim = c(0, 50)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+
+retas +
+  annotate(geom = "label", x = 40, y = 20, 
+           label = "p_x = 1")+
+  annotate(geom = "label", x = 26.67, y = 13.34, 
+           label = "p_x = 2")+
+  annotate(geom = "label", x = 20, y = 10, 
+           label = "p_x = 3")+
+  annotate(geom = "label", x = 16, y = 6, 
+           label = "p_x = 4")
+```
+
+- Vamos assumir quatro preços de passagens: 1, 2, 3 e 4
+
+---
+
+# Porém, o preço das passagens pode mudar
+
+
+```{r echo=FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
+
+price_x <- 5
+
+tangente <- Solve(paste(Simplify(mu_x / mu_y), "==", price_x, "/", price_y), y)
+
+
+marginal_utility_multiple <- function(my_x) {
+  mux_muy_price <- tangente
+  solution <- Eval(mux_muy_price, list(x = my_x))
+  as.numeric(str_extract(solution, "-?[0-9]\\d*(\\.\\d+)?"))
+}
+
+# encontrar a ótima quantidade de x
+optimal_x <- uniroot(function(x) budget(x) - marginal_utility_multiple(x), c(0, 100))$root
+
+#substituir a ótima quantidade de x em y
+optimal_y <- budget_change(price_x, optimal_x)
+
+# Com ambas quantidades ótimas, calcular o valor máximo de Utilidade:
+max_utility <- utility_u(optimal_x, optimal_y)
+
+optimal_x_01 <- 72.72
+optimal_y_01 <- 36.36
+
+optimal_x_05 <- 53.34
+optimal_y_05 <- 26.67
+
+optimal_x_1 <- 40
+optimal_y_1 <- 20
+
+optimal_x_2 <- 26.67
+optimal_y_2 <- 13.34
+
+optimal_x_3 <- 20
+optimal_y_3 <- 10
+
+optimal_x_4 <- 16
+optimal_y_4 <- 8
+
+optimal_x_5 <- 13.34
+optimal_y_5 <- 6.67
+```
+
+```{r echo = FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
+
+retas_otimas <- retas +
+  annotate(geom = "point", x = optimal_x_01, y = optimal_y_01, colour = "orange", size = 3) + 
+  annotate(geom = "point", x = optimal_x_05, y = optimal_y_05, colour = "orange", size = 3)+ 
+  annotate(geom = "point", x = optimal_x_1, y = optimal_y_1, colour = "orange", size = 3)+
+   annotate(geom = "point", x = optimal_x_2, y = optimal_y_2, colour = "orange", size = 3)+
+   annotate(geom = "point", x = optimal_x_3, y = optimal_y_3, colour = "orange", size = 3)+
+  annotate(geom = "point", x = optimal_x_4, y = optimal_y_4, colour = "orange", size = 3)+
+  annotate(geom = "point", x = optimal_x_5, y = optimal_y_5, colour = "orange", size = 3)
+
+retas_otimas +
+  annotate(geom = "label", x = optimal_x_05, 
+           y = optimal_y_05+2, 
+           label = "Preço_x = 0.5")+
+  annotate(geom = "label", x = optimal_x_01, 
+           y = optimal_y_01+2, 
+           label = "Preço_x = 0.1")+
+  annotate(geom = "label", x = optimal_x_5-2, 
+           y = optimal_y_5-2, 
+           label = "Preço_x = 5")
+```
+
+- Para cada R.O. haverá uma curva de indiferença onde a utilidade do consumidor será maximizada.
+
+---
+
+# Reta Preço-Consumo
+
+```{r, echo=FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
+
+reta_pc <- data.frame(x=c(optimal_x_01, optimal_x_05, optimal_x_1, 
+                          optimal_x_2, optimal_x_3,
+                          optimal_x_4,optimal_x_5),
+                      y=c(optimal_y_01, optimal_y_05, optimal_y_1,
+                          optimal_y_2, optimal_y_3,
+                          optimal_y_4,optimal_y_5))
+
+lm_reta_pc <- lm(y~x, data=reta_pc)
+
+func_reta_pc <- function(x){
+  0.001185+0.499986*x
+}
+
+retas_otimas+
+  geom_line(data=reta_pc, aes(x=x, y=y), color="blue", size=1.2)+
+  annotate(geom = "label", x = 50, y = 25, 
+           label = "Reta Preço-Consumo")
+
+
+```
+
+- Todos os pontos máximos criam a reta $Preço-Consumo$
+
+---
+
+# E quando a renda muda?
+
+```{r echo=FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
+
+price_x <- 1
+
+price_y <- 2
+
+
+budget_change_all <- function(x, budget) {
+  ((-price_x/price_y) * x) + budget/price_y
+}
+
+renda_consumo <- data.frame(x=c(20,30,40,50),
+                            y=c(10,15,20,25),
+                            budget=c(40,60,80,100))
+
+data_budget <- tibble(x=rep(1:100, times=4),
+                      budget=rep(seq(from=40, to=100, 
+                                     by=20), each=100),
+                      y=budget_change_all(x,budget))
+
+varios_budget <- data_budget %>% 
+  ggplot(aes(x,y, color=factor(budget)))+
+  geom_line(size=1.2)+
+  labs(x = "passagens de ônibus", 
+       y = "kg de alimento") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 100, 10)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 40, 10)) +
+  coord_cartesian(xlim = c(0, 100), ylim = c(0, 50)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+
+
+
+varios_budget
+
+```
+
+---
+
+# Quando a renda muda: curva renda-consumo
+
+```{r echo=FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
+
+varios_budget + 
+  geom_point(data=renda_consumo, aes(x=x,y=y),
+             size=5)+
+  geom_line(data=reta_pc, aes(x=x, y=y), color="blue", size=2)+
+  annotate(geom = "label", x = 60, y = 30, 
+           label = "Reta Renda-Consumo")
+
+```
+
+
+- Se a inclinação da curva renda-consumo for positiva, o bem $x$ é um **bem normal**
+
+--
+
+- Se a inclinação for negativa, o bem é **inferior**
+
+---
+
+# Construindo a demanda individual (1 de 2)
+
+Os pontos máximos que foram calculados a aparecem abaixo:
+
+```{r echo = FALSE}
+library(knitr)
+
+demanda <- reta_pc %>%
+  add_column(p_x = c(0.1,0.5,1,2,3,4,5))
+
+demanda %>% 
+  kable()
+
+```
+
+
+---
+
+# Construindo a demanda individual (2 de 2)
+
+- Podemos agora, criar a curva da demanda individual, ao plotar a quantidade $x$ vs o preço $p_x$
+
+
+```{r, echo=FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
+
+demanda %>% 
+  ggplot(aes(x,p_x))+
+  geom_line(size=1.2)+
+  labs(x = "passagens de ônibus", 
+       y = "preço da passagem") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 100, 10)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 6, 1)) +
+  coord_cartesian(xlim = c(0, 100), ylim = c(0, 6)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+
+
+```
+
+---
+
+# Construindo a demanda de mercado (1 de 2)
+
+- A Demanda do mercado será a soma das demandas individuais a cada preço de mercado
+
+--
+
+- Lembrando que cada consumidor terá curvas de demanda individual diferentes 
+
+```{r, echo=FALSE, fig.height=5, fig.width=10, warning=FALSE, fig.align='center', fig.retina=2}
+
+demanda_1 <- demanda %>% 
+  mutate(consumidor = "consumidor_1")
+
+demanda_2 <- demanda %>% 
+  mutate(x=x*1.33,
+         consumidor = "consumidor_2")
+
+demanda_3 <- demanda %>% 
+  mutate(x=x*2,
+         consumidor = "consumidor_3")
+
+demanda_mercado <- demanda_1 %>% 
+  bind_rows(demanda_2, demanda_3)
+
+demanda_mercado %>% 
+  ggplot(aes(x,p_x, color=consumidor))+
+  geom_line(size=1.5)+
+  facet_wrap(vars(consumidor), ncol=3)+
+  theme_bw()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+  
+
+```
+
+---
+
+# Construindo a demanda de mercado (2 de 2)
+
+```{r, echo=FALSE, fig.height=5, fig.width=10, warning=FALSE, message=FALSE, fig.align='center', fig.retina=2}
+
+q_mercado <- rnorm(5, mean=10000, sd=200)
+
+demanda %>% 
+  mutate(x_mercado=x*q_mercado) %>% 
+  ggplot(aes(x_mercado, p_x))+
+  geom_smooth(se=FALSE, size=1.2, color = "orange")+
+  labs(x = "passagens de ônibus", 
+       y = "preço da passagem") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 800000, 100000)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 6, 1)) +
+  coord_cartesian(xlim = c(0, 800000), ylim = c(0, 6)) +
+  #geom_line(size=1.5)+
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+
+```
+
+---
+class: center, middle
+
+# Fim do Apêndice 3
+
+Prof. Mauricio Uriona Maldonado
