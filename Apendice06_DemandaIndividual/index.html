@@ -4,7 +4,6 @@
     <title>Demanda Individual e de Mercado</title>
     <meta charset="utf-8" />
     <meta name="author" content="Prof. Mauricio Uriona Maldonado" />
-    <meta name="date" content="2022-12-05" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/rladies.css" rel="stylesheet" />
@@ -19,11 +18,21 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Demanda Individual e de Mercado
+]
+.subtitle[
 ## Apêndice 3 - Aula 04 - Demanda Individual
+]
+.author[
 ### Prof. Mauricio Uriona Maldonado
+]
+.institute[
 ### EPS 5222
-### 12/05/2022
+]
+.date[
+### 13/05/2022
+]
 
 ---
 
@@ -154,17 +163,7 @@ class: center, middle, inverse, title-slide
 
 # Quando a renda muda: curva renda-consumo
 
-
-```r
-varios_budget + 
-  geom_point(data=renda_consumo, aes(x=x,y=y),
-             size=5)+
-  geom_line(data=reta_pc, aes(x=x, y=y), color="blue", size=2)+
-  annotate(geom = "label", x = 60, y = 30, 
-           label = "Reta Renda-Consumo")
-```
-
-![](index_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-15-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
 
 - Se a inclinação da curva renda-consumo for positiva, o bem `\(x\)` é um **bem normal**
@@ -180,15 +179,15 @@ varios_budget +
 Os pontos máximos que foram calculados a aparecem abaixo:
 
 
-|     x|     y| p_x|
-|-----:|-----:|---:|
-| 72.72| 36.36| 0.1|
-| 53.34| 26.67| 0.5|
-| 40.00| 20.00| 1.0|
-| 26.67| 13.34| 2.0|
-| 20.00| 10.00| 3.0|
-| 16.00|  8.00| 4.0|
-| 13.34|  6.67| 5.0|
+|   x|  y| p_x|
+|---:|--:|---:|
+| 400| 20| 0.1|
+|  80| 20| 0.5|
+|  40| 20| 1.0|
+|  20| 20| 2.0|
+|  15| 20| 3.0|
+|  10| 20| 4.0|
+|   8| 20| 5.0|
 
 
 ---
@@ -271,6 +270,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
