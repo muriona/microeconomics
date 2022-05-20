@@ -209,7 +209,9 @@ outputperunit+
 
 ```
 
-class: center, middle
+---
+
+class: center, middle, inverse
 
 # Produção no Longo Prazo
 
@@ -334,7 +336,37 @@ plot_ly() %>%
   #add_contour(z=s$z)
 ```
 
+---
 
+# Rendimentos de escala
+
+--
+
+- Rendimentos crescentes: quando a produção mais do que dobra se dobrarem os insumos
+
+--
+
+- Rendimentos constantes: quando a produção dobra proporcionalmente a dobrarem os insumos
+
+--
+
+- Rendimentos decrescentes: quando a produção cresce menos do que o dobro se dobrarem os insumos
+
+--
+
+- Em funções Cobb-Douglas, é fácil identificar o tipo de rendimentos à escala
+
+--
+
+- Se $\alpha+\beta < 1$ então **Rendimentos Decrescentes**
+
+--
+
+- Se $\alpha+\beta = 1$ então **Rendimentos Constantes**
+
+--
+
+- Se $\alpha+\beta > 1$ então **Rendimentos Crescentes**
 ---
 
 class: center, middle
