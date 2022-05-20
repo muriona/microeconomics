@@ -1,6 +1,6 @@
 ---
 title: "Teoria da Produção"
-subtitle: "Apêndice - Aula 06 - Curto Prazo"
+subtitle: "Apêndice - Curto e Longo Prazos"
 author: "Prof. Mauricio Uriona Maldonado"
 institute: "EPS 5222"
 date: "`r format(Sys.Date(), '%d/%m/%Y')`"
@@ -25,7 +25,13 @@ options(htmltools.dir.version = FALSE,
 xaringanExtra::use_share_again()
 ```
 
-# Função de Produção
+class: center, middle
+
+# Produção no Curto Prazo
+
+---
+
+# Função de Produção no curto prazo
 
 - Vamos começar entendendo a forma de uma função de produção quando apenas um insumo é variável.
 
@@ -67,7 +73,7 @@ producao %>%
 ---
 # Graficar
 
-- Os dados da tabela podem ser representados como uma função de produção: $$F_{(L)}=-0.5L^3+6L^2-L$$
+- Os dados da tabela podem ser representados como uma função de produção: $$Q_{(L)}=-0.5L^3+6L^2-L$$
 
 --
 
@@ -108,18 +114,18 @@ producao %>%
 ---
 # Calculando PMg e PMe
 
-- O PMg pode ser entendido como a derivada $$\frac{\partial F_{L}}{\partial L}$$
+- O PMg pode ser entendido como a derivada $$\frac{\partial Q_{(L)}}{\partial L}$$
 --
 
-- No nosso caso: $$\frac{\partial F_{(L)}}{\partial L}=-1.5L^2+12L-1$$
-
---
-
-- Já, o PMe pode ser entendido como o produto médio por unidade de trabalho: $$\frac{F_{(L)}}{L}$$
+- No nosso caso: $$\frac{\partial Q_{(L)}}{\partial L}=-1.5L^2+12L-1$$
 
 --
 
-- No nosso caso: $$\frac{F_{(L)}}{L}=-0.5L^2+6L-1$$
+- Já, o PMe pode ser entendido como o produto médio por unidade de trabalho: $$\frac{Q_{(L)}}{L}$$
+
+--
+
+- No nosso caso: $$\frac{Q_{(L)}}{L}=-0.5L^2+6L-1$$
 
 ---
 
@@ -202,6 +208,132 @@ outputperunit+
   
 
 ```
+
+class: center, middle
+
+# Produção no Longo Prazo
+
+---
+
+
+# Função de Produção no Longo Prazo
+
+--
+
+- No longo prazo, a função de produção $Q$ depende do Trabalho $L$ e do Capital $K$
+
+--
+
+- Uma função de produção comumente usada é a *Cobb-Douglas* que tem a forma:
+$$Q_{(K,L)}=AK^\alpha L^\beta$$
+--
+
+- Onde: $A$ é uma constante e $\alpha+\beta=1$
+
+--
+
+- Vamos assumir que $\alpha=0.5$ e que $\beta=0.5$
+---
+
+# Isoquantas
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
+
+library(Ryacas0)
+
+x <- Sym("x")
+y <- Sym("y")
+U <- Sym("U")
+
+utility_u <- function(x, y) (x) * (y)
+utility_solved <- Solve(utility_u(x,y)==U,y)
+
+#função cobb-douglas
+
+utility_K <- function(my_L, my_Q) {
+ (my_Q^(2))/my_L
+}
+
+#função xy
+#utility_K <- function(my_L, my_Q) {
+#  my_Q/my_L
+#}
+
+cobb_douglas <- data.frame(Q = rep(2, times=11),
+                           L = c(0:10))
+
+cobb_douglas <- cobb_douglas %>% 
+  mutate(K=utility_K(L,Q))
+
+ggplot()+
+  
+  # Budget line
+#  stat_function(data = tibble(x = 0:80), aes(x = x),
+#                fun = budget, color = "#e32d91", size = 1.5) +
+#  annotate(geom = "label", x = 2.5, y = budget(2.5), 
+#           label = "R.O.", color = "#e32d91") +
+  # U = 10
+ stat_function(data = tibble(x = 0:10), aes(x = x),
+                fun = utility_K, args = list(my_Q = 2),
+                color = "#ab62c0", size = 1.5) +
+  annotate(geom = "label", x = 5, y = utility_K(5, 2), 
+           label = "Q = 2", color = "#ab62c0") +
+  # U = 1000
+  stat_function(data = tibble(x = 0:10), aes(x = x),
+                fun = utility_K, args = list(my_Q = 4),
+                color = "#ca5670", size = 1.5) +
+  annotate(geom = "label", x = 5, y = utility_K(5, 4), 
+           label = "Q = 4", color = "#ca5670") +
+  # U = 1500
+  stat_function(data = tibble(x = 0:10), aes(x = x),
+                fun = utility_K, args = list(my_Q = 6),
+                color = "#c57c3c", size = 1.5) +
+  annotate(geom = "label", x = 5, y = utility_K(5, 6), 
+           label = "Q = 6", color = "#c57c3c") +
+  labs(x = "Trabalho (L)", 
+       y = "Capital (K)") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
+  coord_cartesian(xlim = c(0, 11), ylim = c(0, 11)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"))
+```
+
+---
+
+# Graficar em 3D
+
+- As isoquantas são, na verdade, um plano.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', fig.retina=2}
+library(plotly)
+library(akima)
+
+xseq <- rep(seq(1,80), time=80)
+yseq <- rep(seq(1,80), time=1, each=80)
+
+data <- data.frame(xseq, yseq)
+
+data <- data %>% 
+  mutate(z=(xseq^0.5)*(yseq^0.5))
+
+s <- interp(x=data$xseq, y=data$yseq, z=data$z)
+
+plot_ly() %>% 
+  add_surface(x=s$x, y=s$y, z=s$z,
+              contours= list(
+                z = list(
+                       show=TRUE,
+                       usecolormap=TRUE,
+                       highlightcolor="#ff0000",
+                       project=list(z=TRUE)
+              ),
+              size=90
+              ))
+  #add_contour(z=s$z)
+```
+
 
 ---
 
