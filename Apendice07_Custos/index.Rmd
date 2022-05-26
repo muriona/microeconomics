@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "Curvas de Custo"
 subtitle: "Apêndice - Curto e Longo Prazos"
@@ -589,3 +590,593 @@ class: center, middle
 # Fim do Apêndice
 
 Prof. Mauricio Uriona Maldonado
+=======
+---
+title: "Curvas de Custo"
+subtitle: "Apêndice - Curto e Longo Prazos"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: false
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE,
+        echo = FALSE)
+```
+
+```{r share-again, echo=FALSE}
+xaringanExtra::use_share_again()
+```
+
+class: center, middle
+
+# Custos no Curto Prazo
+
+---
+
+# Função de Produção no curto prazo
+
+- Vamos lembrar a forma de uma função de produção quando apenas um insumo é variável.
+
+
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+library(Deriv)
+library(tidyverse)
+library(DT)
+library(glue)
+library(knitr)
+
+#funcao_prod <- function(h){
+  
+#  (154/(1+exp(-0.8*(h-5))))+1
+#}
+
+funcao_prod <- function(x){
+  -0.5*x^3+6*x^2-x
+  }
+
+
+L <- seq(from= 0.1, to=10, by=0.1)
+Q <- funcao_prod(L)
+producao <- data.frame(L,Q=round(Q,2))
+
+#datatable(producao, options = list(
+#  initComplete = JS(
+#    "function(settings, json) {",
+#    "$(this.api().table().header()).css({'font-size': '15px', 'background-color': '#c2d1f0', 'color': '#fff'});",
+#    "}"))) %>%  formatStyle(columns = colnames(.$x$data), `font-size` = '12px')
+
+```
+
+
+
+---
+# Gráfico da curva de produção
+
+- Os dados da tabela podem ser representados como uma função de produção: $$Q_{(L)}=-0.5L^3+6L^2-L$$
+
+--
+
+
+```{r, echo =FALSE, fig.height=5, fig.width=8, fig.retina=2}
+
+
+funcao_prod2 <- function(K,L){
+  (K^0.5)*(L^0.5)
+}
+
+PMg <- Deriv(funcao_prod, "x")
+
+
+producao <- producao %>% 
+  mutate(
+         PMg = PMg(L),
+         PMe = (Q/L))
+
+PMe_empirical <- splinefun(x=producao$L,
+                             y=producao$PMe)
+
+producao %>% 
+  ggplot(aes(L,Q))+
+  geom_line(color="#e32d91", size=2)+
+  geom_label(aes(x=9.5,y=funcao_prod(9.5)), color = "#e32d91", label="Produto Total", size = 5)+
+  labs(x = "Horas Trabalhadas x1000 (L)", 
+       y = "Unidades Produzidas x1000 (Q)") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 130, 20)) +
+  coord_cartesian(xlim = c(0, 11), ylim = c(0, 135)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16, face="bold"))
+```
+
+
+---
+# Lembrando: PMg e PMe
+
+- O PMg é: $$\frac{\partial Q_{(L)}}{\partial L}$$
+--
+
+- No nosso caso: $$\frac{\partial Q_{(L)}}{\partial L}=-1.5L^2+12L-1$$
+
+--
+
+- Já, o PMe é: $$\frac{Q_{(L)}}{L}$$
+
+--
+
+- No nosso caso: $$\frac{Q_{(L)}}{L}=-0.5L^2+6L-1$$
+
+---
+
+# Custos e sua relação com a Produção no curto prazo
+
+--
+
+- Os custos são calculados a partir das quantidades produzidas exceto o Custo Fixo $(CF)$
+
+--
+
+- Custo Variável: $$CV=wQ_{(L)}$$
+
+--
+
+- Onde: $w$ é o custo da mão de obra ($ por hora por exemplo)
+
+--
+
+- Custo Total: $$CT=CV+CF$$
+
+--
+
+- Ou seja, $$CT_{(Q)}=wQ_{(L)}+CF$$
+
+---
+
+# Custos e sua relação com a Produção no curto prazo
+
+--
+
+
+- Assumindo que $w=50$ unidade monetária por hora trabalhada e $Q_{(L)}=-0.5L^3+6L^2-L$
+
+
+```{r echo = FALSE, fig.height=5, fig.width=8, fig.retina=2, fig.align='center'}
+library(DT)
+
+w = 50
+
+producao <- producao %>% 
+  mutate(PMe = round(PMe, 2),
+         PMg = round(PMg, 2),
+         CMg = w/PMg,
+         CVMe = w/PMe,
+         CV = w*L,
+         CF = 100,
+         CT = CV+CF,
+         CTMe = CT/Q,
+         CFMe = CF/Q)
+
+
+producao %>%
+  select(2,7,8,9) %>% 
+  head(80) %>% 
+  pivot_longer(-Q) %>% 
+  ggplot(aes(Q, value, color=name))+
+  geom_line(size = 2)+
+  geom_label(aes(x=100,y=funcao_prod(9.5)), color = "black", 
+             label="Custo Fixo", size = 5)+
+  geom_label(aes(x=100,y=300), color = "black", 
+             label="Custo Variável", size = 5)+
+  geom_label(aes(x=100,y=400), color = "black", 
+             label="Custo TOTAL", size = 5)+
+  labs(x = "Unidades Produzidas x1000 (Q)", 
+       y = "Custo (x1000$)") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 120, 20)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 500, 100)) +
+  coord_cartesian(xlim = c(0, 125), ylim = c(0, 510)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+
+```
+
+
+---
+
+# CMg, CFMe, CVMe e CMe (1 de 3)
+
+--
+
+- As curvas de custo são recíprocas *monetizadas* das curvas de produto
+
+--
+
+- Custo Marginal é: $$CMg_{(Q)}=\frac{\partial CV_{(Q)}}{\partial Q}=w\frac{\partial L}{\partial Q}=w\frac{1}{PMg}$$
+
+--
+
+- Custo Variável Médio é: $$CVMe_{(Q)}=\frac{CV}{Q}=w\frac{L}{Q}=w\frac{1}{PMe}$$
+
+--
+
+- Custo Fixo Médio é: $$CFMe_{(Q)}=\frac{CF}{Q}$$
+
+--
+
+- Custo (Total) Médio é: $$CMe_{(Q)}=\frac{CT}{Q}=\frac{CV}{Q}+\frac{CF}{Q}$$
+
+
+---
+
+# CMg, CFMe, CVMe e CMe (2 de 3)
+
+--
+
+- Lembrando que o custo de mão de obra é $w=50$ $/hora
+
+--
+
+```{r echo = FALSE, fig.height=5, fig.width=8, fig.retina=2, fig.align='center'}
+
+colors <- c("PMg" = "#e32d91", "PMe"="darkblue", "CVMe"="purple","CFMe"="orange")
+
+outputperunit <- producao %>% 
+  head(80) %>% 
+  filter(L < 8) %>% 
+  ggplot(aes(x=Q))+
+  geom_line(aes(y= CMg, color="PMg"), size=2)+
+  geom_line(aes(y=CTMe, color="PMe"), size=2)+
+  geom_line(aes(y=CVMe, color="CVMe"), size=2)+
+  geom_line(aes(y=CFMe, color="CFMe"), size=2)
+
+outputperunit+
+  geom_label(aes(x=118,y=15), color = "#e32d91", label="CMg", size = 5)+
+  geom_label(aes(x=60,y=5), color = "darkblue", label="CMe", size = 5)+
+  geom_label(aes(x=60,y=3.5), color = "purple", label="CVMe", size = 5)+
+  geom_label(aes(x=118,y=0.8), color = "orange", label="CFMe", size = 5)+
+  scale_color_manual(values=colors)+
+  labs(x = "Unidades Produzidas x1000 (Q)", 
+       y = "Custo ($ por unidade)") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 120, 20)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 20, 5)) +
+  coord_cartesian(xlim = c(0, 125), ylim = c(0, 21)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+```
+
+
+---
+
+# CMg, CFMe, CVMe e CMe (3 de 3)
+
+- Vamos fazer um 'zoom' para ver melhor a área onde as curvas de CMg, CVMe e CMe se cruzam
+
+--
+```{r echo = FALSE, fig.height=5, fig.width=8, fig.retina=2, fig.align='center'}
+
+
+CMe_empirical <- splinefun(x=producao$L,
+                             y=producao$CTMe)
+
+CVMe_empirical <- splinefun(x=producao$L,
+                             y=producao$CVMe)
+
+CMg <- function(x){
+  50/PMg(x)
+}
+
+optimal_CMg <- uniroot(function(x) CMg(x) - CMe_empirical(x), c(6,7))
+
+Q_otimo <- funcao_prod(optimal_CMg$root)
+
+optimal_CMg_CVMe <- uniroot(function(x) CMg(x) - CVMe_empirical(x), c(5,7))
+
+Q_otimo_CMg_CMe <- funcao_prod(optimal_CMg_CVMe$root)
+
+
+outputperunit+
+  geom_label(aes(x=118,y=9), color = "#e32d91", label="CMg", size = 5)+
+  geom_label(aes(x=118,y=4), color = "darkblue", label="CMe", size = 5)+
+  geom_label(aes(x=118,y=3), color = "purple", label="CVMe", size = 5)+
+  geom_label(aes(x=118,y=0.8), color = "orange", label="CFMe", size = 5)+
+  annotate(geom = "point", x = Q_otimo_CMg_CMe, 
+           y = CVMe_empirical(optimal_CMg$root), size = 8)+
+  annotate(geom = "point", x = Q_otimo, 
+           y = CMe_empirical(optimal_CMg$root), size = 8)+
+  annotate(geom = "text", x = Q_otimo_CMg_CMe, 
+           y = CVMe_empirical(optimal_CMg$root)-0.5, 
+           label = "(102,3)", size = 5)+
+  annotate(geom = "text", x = Q_otimo, 
+           y = CMe_empirical(optimal_CMg$root)+0.5, 
+           label = "(110,3.8)", size = 5)+
+  scale_color_manual(values=colors)+
+  labs(x = "Unidades Produzidas x1000 (Q)", 
+       y = "Custo ($ por unidade)") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(80, 120, 5)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
+  coord_cartesian(xlim = c(80, 121), ylim = c(0, 11)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+  
+
+```
+
+---
+
+class: center, middle, inverse
+
+# Custos no Longo Prazo
+
+---
+
+
+# Função de Produção no Longo Prazo
+
+--
+
+- Lembremos que, no longo prazo, a função de produção $Q$ depende do Trabalho $L$ e do Capital $K$
+
+--
+
+- Uma função de produção comumente usada é a *Cobb-Douglas* que tem a forma:
+$$Q_{(K,L)}=AK^\alpha L^\beta$$
+--
+
+- Onde: $A$ é uma constante e geralmente $\alpha+\beta=1$
+
+--
+
+- Vamos assumir que $\alpha=0.5$ e que $\beta=0.5$
+---
+
+# Isoquantas
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
+
+library(Ryacas0)
+
+x <- Sym("x")
+y <- Sym("y")
+U <- Sym("U")
+
+utility_u <- function(x, y) (x) * (y)
+utility_solved <- Solve(utility_u(x,y)==U,y)
+
+#função cobb-douglas
+
+utility_K <- function(my_L, my_Q) {
+ (my_Q^(2))/my_L
+}
+
+#função xy
+#utility_K <- function(my_L, my_Q) {
+#  my_Q/my_L
+#}
+
+cobb_douglas <- data.frame(Q = rep(2, times=11),
+                           L = c(0:10))
+
+cobb_douglas <- cobb_douglas %>% 
+  mutate(K=utility_K(L,Q))
+
+ggplot()+
+  
+  # Budget line
+#  stat_function(data = tibble(x = 0:80), aes(x = x),
+#                fun = budget, color = "#e32d91", size = 1.5) +
+#  annotate(geom = "label", x = 2.5, y = budget(2.5), 
+#           label = "R.O.", color = "#e32d91") +
+  # U = 10
+ stat_function(data = tibble(x = 0:10), aes(x = x),
+                fun = utility_K, args = list(my_Q = 2),
+                color = "#ab62c0", size = 1.5) +
+  annotate(geom = "label", x = 5, y = utility_K(5, 2), 
+           label = "Q = 2", color = "#ab62c0", size = 6) +
+  # U = 1000
+  stat_function(data = tibble(x = 0:10), aes(x = x),
+                fun = utility_K, args = list(my_Q = 4),
+                color = "#ca5670", size = 1.5) +
+  annotate(geom = "label", x = 5, y = utility_K(5, 4), 
+           label = "Q = 4", color = "#ca5670", size = 6) +
+  # U = 1500
+  stat_function(data = tibble(x = 0:10), aes(x = x),
+                fun = utility_K, args = list(my_Q = 6),
+                color = "#c57c3c", size = 1.5) +
+  annotate(geom = "label", x = 5, y = utility_K(5, 6), 
+           label = "Q = 6", color = "#c57c3c", size = 6) +
+  labs(x = "Trabalho (L)", 
+       y = "Capital (K)") +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
+  coord_cartesian(xlim = c(0, 11), ylim = c(0, 11)) +
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"))
+```
+
+
+---
+
+# Linha de Isocusto
+
+--
+
+- Além das isoquantas, a empresa deve decidir com relação ao custo da mão de obra ($w$) e ao custo do capital ($r$)
+
+--
+
+- Em outras palavras, a empresa se defronta com uma reta orçamentária, parecida àquela do consumidor. A forma é: $$C=wL+rK$$
+
+--
+
+- Deixando em função de L: $$K=\frac{C}{r}-\frac{w}{r}L$$
+
+
+---
+
+# Minimizando o custo de produção (1 de 3)
+
+--
+
+- Vamos assumir que o custo do capital é $r$= 1.5 $/hora 
+
+--
+
+- e que o custo de mão de obra é $w$= 3 $/hora
+
+--
+
+- O orçamento original para a produção é $C$= 90.000 `$` (vai definir a linha de isocusto): $$K=60000-0.5L$$
+
+---
+
+# Minimizando o custo de produção (2 de 3)
+
+```{r echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
+
+price_w <- 2
+
+price_r <- 2
+
+isocost <- 80000
+
+isocost_line <- function(x) (-price_w/price_r) * x + (isocost/price_r)
+
+ggplot() + 
+  # Draw the line
+  stat_function(data = tibble(x = 0:50000), aes(x = x),
+                fun = isocost_line, color = "#e32d91", 
+                size = 1.5) +
+  # Add a label
+  annotate(geom = "label", x = 10000, y = isocost_line(10000), 
+           label = "Linha de Isocusto", color = "#e32d91") +
+  annotate(geom="text",
+           x = 40000,
+           y = 70000,
+           label = glue("Eq. Isocusto: K = {(isocost/price_r)}-{(price_w/price_r)}L"),
+           color = "darkblue")+
+  labs(x = "Horas Trabalhadas (L)", 
+       y = "Horas de Capital (K)") +
+  # Make the axes go all the way to zero
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 50000, 10000),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 100000, 20000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 55000), ylim = c(0, 110000))+
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=14, face="bold"))
+
+```
+
+---
+
+# Minimizando o custo de produção (3 de 3)
+
+```{r echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
+
+library(Ryacas0)
+
+# criando variáveis Yacas
+x <- Sym("x")
+y <- Sym("y")
+U <- Sym("U")
+
+funcao_prod2 <- function(x, y) (x^0.5) * (y^0.5)
+
+utility_solved <- function(my_x, my_U) {
+  (my_U^2)/my_x
+}
+
+
+q <- 20000
+
+data_ci <- tibble(x=0:50000,
+                 Q=q,
+                 Isoquanta=utility_solved(x,Q),
+                 Isocusto=isocost_line(x))
+
+
+
+
+data_ci2 <- data_ci %>% 
+  filter(x>=1) 
+
+isoquanta_empirical <- splinefun(x=data_ci2$x,
+                             y=data_ci2$Isoquanta)
+
+#optimal_L <- uniroot(function(x) isocost_line(x) - isoquanta_empirical(x), c(20000,25000))
+
+#optimal_K <- isoquanta_empirical(optimal_L$root)
+
+data_ci %>% 
+  pivot_longer(-x:-Q) %>% 
+  ggplot(aes(x,value, color=name)) +
+  geom_line(size=1.2)+
+  annotate(geom = "text", 
+           x = 40000, 
+           y = utility_solved(40000,q)+5000, 
+           label = glue("Q={q}"), 
+           color = "darkblue",
+           size = 6)+
+  annotate(geom="text",
+           x = 40000,
+           y = 80000,
+           label = glue("Função de Produção: Q = L^0.5 * K^0.5"),
+           color = "darkblue")+
+  annotate(geom="text",
+           x = 40000,
+           y = 70000,
+           label = glue("L_otimo = 20000"),
+           color = "darkblue")+
+  annotate(geom="text",
+           x = 40000,
+           y = 60000,
+           label = glue("K_otimo = 20000"),
+           color = "darkblue")+
+  annotate(geom="text",
+           x = 40000,
+           y = 50000,
+           label = glue("Custo Total = {round(20000*price_w+20000*price_r,0)}"),
+           color = "darkblue")+
+  annotate(geom = "point", x = 20000, 
+           y = 20000, size = 4, color="darkblue")+
+  labs(x = "Horas Trabalhadas (L)", 
+       y = "Horas de Capital (K)") +
+  # Make the axes go all the way to zero
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 50000, 10000),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 100000, 20000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 55000), ylim = c(0, 110000))+
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=14, face="bold"),
+        legend.position = "none")
+
+```
+
+---
+
+class: center, middle
+
+# Fim do Apêndice
+
+Prof. Mauricio Uriona Maldonado
+>>>>>>> 733fc1ee5af082345ff33661d477fdbffa3680bb
