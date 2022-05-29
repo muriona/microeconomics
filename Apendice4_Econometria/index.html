@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Estimação Empírica da Demanda de Cigarros</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Prof. Mauricio Uriona Maldonado" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css/rladies-fonts.css" rel="stylesheet" />
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="libs/shareon/shareon.min.js"></script>
+    <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Estimação Empírica da Demanda de Cigarros
+## Apêndice
+### Prof. Mauricio Uriona Maldonado
+### EPS 5222
+### 29/05/2022
+
+---
+
+
+
+
+
+
+
+# Estimação empírica da demanda por cigarros
+
+- A demanda por cigarros é um problema de saúde pública que tem interessado muito aos economistas
+
+--
+
+- Se fosse possível avaliar - de acordo com a teoria econômica - quanto de imposto seria necessário para diminuir uma determinada quantidade de cigarro consumido, a população seria beneficiada
+
+--
+
+- Graças aos avanços metodológicos da econometria, economistas desenvolveram ferramental para responder esta e outras perguntas
+
+---
+
+# Abordagem Econométrica
+
+--
+
+- A regressão por “mínimos quadrados” é um método bastante usado pelos economistas, tanto de regressão com um único regressor quanto com vários.
+
+--
+
+- O caso da estimação da demanda de um determinado produto quanto se têm informações de preço é mais difícil de estimar do que simplesmente: `$$Q=\beta_{0}+\beta_{1}P+\mu$$`
+--
+
+- Isto pois o preço - como sabemos pela teoria estudada até agora - é determinada pela interação entre a oferta e demanda
+
+---
+# O problema
+
+--
+- O que de fato acontece pode ser apreciado na figura
+
+--
+
+![](supplydemand.png)
+
+---
+# O problema
+
+- O que de fato acontece pode ser apreciado na figura
+
+
+![](supplydemand2.png)
+
+---
+# Regressão de duas etapas
+
+--
+
+- A solução que os economistas pensaram foi de adicionar mais variáveis à regressão de forma que uma das curvas ficasse fixa, desta forma, os pontos seriam na verdade a forma de como estimar a outra curva.
+
+--
+
+![](supplydemand3.png)
+
+---
+# Voltando ao caso da demanda de cigarros
+
+--
+
+- No caso da estimação de cigarros, uma variável externa - instrumental - é o imposto de venda `\(SalesTax\)`.
+
+--
+
+- A ideia é que `\(SalesTax\)` afeta apenas a demanda e - de forma indireta - por meio do preço.
+
+--
+
+- Por outro lado, `\(SalesTax\)` não é afetada pela demanda de cigarros portanto é considerado um efeito **exógeno**.
+
+---
+# Dados usados
+
+--
+
+- São usados dados de 1985 a 1995 de consumo de cigarros em todos os Estados dos Estados Unidos.
+
+
+```
+##      state      year         cpi          population           packs       
+##  AL     : 2   1985:48   Min.   :1.076   Min.   :  478447   Min.   : 49.27  
+##  AR     : 2   1995:48   1st Qu.:1.076   1st Qu.: 1622606   1st Qu.: 92.45  
+##  AZ     : 2             Median :1.300   Median : 3697472   Median :110.16  
+##  CA     : 2             Mean   :1.300   Mean   : 5168866   Mean   :109.18  
+##  CO     : 2             3rd Qu.:1.524   3rd Qu.: 5901500   3rd Qu.:123.52  
+##  CT     : 2             Max.   :1.524   Max.   :31493524   Max.   :197.99  
+##  (Other):84                                                                
+##      income               tax            price             taxs       
+##  Min.   :  6887097   Min.   :18.00   Min.   : 84.97   Min.   : 21.27  
+##  1st Qu.: 25520384   1st Qu.:31.00   1st Qu.:102.71   1st Qu.: 34.77  
+##  Median : 61661644   Median :37.00   Median :137.72   Median : 41.05  
+##  Mean   : 99878736   Mean   :42.68   Mean   :143.45   Mean   : 48.33  
+##  3rd Qu.:127313964   3rd Qu.:50.88   3rd Qu.:176.15   3rd Qu.: 59.48  
+##  Max.   :771470144   Max.   :99.00   Max.   :240.85   Max.   :112.63  
+## 
+```
+
+---
+
+# Descrição das etapas para estimação - 2SLS
+
+--
+
+- Na primeira etapa é usado `\(SalesTax\)` como regressor para o Preço `\(P\)`: `$$log(P)=\pi+\pi_{1}SalesTax+\vu$$`
+
+--
+
+- Na segunda etapa é usada a estimação de `\(log(P)\)` como regressor para a Quantidade `\(Q\)`: `$$log(Q)=\beta_{0}+\beta_{1}log(P)$$`
+
+---
+
+# Resultados
+
+
+
+|term        |  estimate| std.error| statistic|   p.value|
+|:-----------|---------:|---------:|---------:|---------:|
+|(Intercept) | 10.176434| 1.6626751|  6.120519| 0.0000002|
+|log(price)  | -1.083587| 0.3189184| -3.397693| 0.0014114|
+
+--
+
+- A equação estimada é: `$$log(Q)=10.17-1.08log(P)$$`
+
+--
+
+- Ou seja, um incremento no preço dos cigarros em 1% reduz o consumo (Q) em 1.08%
+
+--
+
+- Como estamos falando de `\(\frac{\%\Delta Q}{\%\Delta P}=\frac{1.08\%}{1\%}\)`, este coeficiente `\(\beta_{1}\)` representa...
+
+--
+
+- ...a **elasticidade-preço da demanda**
+
+---
+# Referências
+
+*Caso queiram saber mais, seguem algumas referências (os dados vieram do livro do Stock &amp; Watson, capítulo 12).*
+
+- Stock, J.H.; Watson, M.W. (2011). Introduction to Econometrics, 3rd ed. Boston: Addison Wesley. Capítulo 12. Instrumental Variables Regression.
+
+- Zhu, Aaron (2022). Causal Inference with Linear Regression: Endogeneity. Disponível em: [www.medium.com](https://medium.com/towards-data-science/causal-inference-with-linear-regression-endogeneity-9d9492663bac)
+
+---
+
+
+
+class: center, middle
+
+# Fim do Apêndice
+
+Prof. Mauricio Uriona Maldonado
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
