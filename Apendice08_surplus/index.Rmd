@@ -1,0 +1,551 @@
+---
+title: "Excedentes do Produtor e Consumidor"
+subtitle: "Apêndice"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: false
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setupe, include=FALSE}
+options(htmltools.dir.version = FALSE,
+        echo = FALSE)
+knitr::opts_chunk$set(echo=F,
+                      message=F,
+                      warning=F,
+                      fig.retina = 2,
+                      fig.align = "center")
+```
+
+```{r shareagain, echo=FALSE}
+library("tidyverse")
+library("mosaic")
+library("ggrepel")
+library("fontawesome")
+
+xaringanExtra::use_tile_view()
+xaringanExtra::use_tachyons()
+xaringanExtra::use_freezeframe()
+xaringanExtra::use_share_again()
+```
+
+class: center, middle
+
+# Excedentes do Consumidor e do Produtor
+
+---
+
+# Equilíbrio de Mercado
+
+.pull-left[
+
+- A Oferta e Demanda definem o preço de equilíbrio para todas as unidades compradas e vendidas
+
+
+]
+
+.pull-right[
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE,fig.retina=2}
+demand_1=function(x){10-x}
+supply_1=function(x){x}
+
+changes <- ggplot(data.frame(x=c(0,10)), aes(x=x))+
+  stat_function(fun=demand_1, geom="line", size=2, color = "blue")+
+    geom_label(aes(x=9,y=demand_1(9)), color = "blue", label="Demanda 1", size = 5)+
+  stat_function(fun=supply_1, geom="line", size=2, color = "red")+
+    geom_label(aes(x=9,y=supply_1(9)), color = "red", label="Oferta 1", size = 5)+
+  geom_segment(x=0, xend=5, y=5, yend=5, size=1, linetype="dotted")+
+  geom_segment(x=5, xend=5, y=0, yend=5, size=1, linetype="dotted")+
+    scale_x_continuous(breaks=seq(0,10,1),
+                     limits=c(0,10),
+                     expand=expand_scale(mult=c(0,0.1)))+
+  scale_y_continuous(breaks=seq(0,10,1),
+                     limits=c(0,10),
+                     expand=expand_scale(mult=c(0,0.1)),
+                     labels = function(x){paste("$", x, sep="")})+
+  labs(x = "Quantidade (q)",
+       y = "Preço (p)")+
+  theme_classic()
+
+changes
+```
+
+]
+
+---
+
+# Excedente do Consumidor (1 de 5)
+
+.pull-left[
+
+- A curva de demanda mede quanto você estaria **disposto a pagar** por diferentes quantidades
+
+- Em geral, você acaba pagando menos (o preço de equilíbrio $p^*)$ do que estaria **disposto a pagar - $WTP$**
+
+
+- A diferença entre a **disposição a pagar - $WTP$** e o preço é o.hi[excedente do consumidor]
+
+$$EC=WTP-p^*$$
+
+]
+
+.pull-right[
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE,fig.retina=2}
+
+cs_1<-tribble(
+  ~x, ~y,
+  0, 10,
+  0, 5,
+  5, 5
+)
+
+cs<-ggplot(data.frame(x=c(0,10)), aes(x=x))+
+  stat_function(fun=demand_1, geom="line", size=2, color = "blue")+
+    geom_label(aes(x=9,y=demand_1(9)), color = "blue", label="Demanda = Max WTP", size = 5)+
+  geom_segment(x=0, xend=5, y=5, yend=5, size=1, linetype="dotted")+
+  geom_segment(x=5, xend=5, y=0, yend=5, size=1, linetype="dotted")+
+    scale_x_continuous(breaks=seq(0,10,1),
+                     limits=c(0,10),
+                     expand=expand_scale(mult=c(0,0.1)))+
+  scale_y_continuous(breaks=seq(0,10,1),
+                     limits=c(0,10),
+                     expand=expand_scale(mult=c(0,0.1)),
+                     labels = function(x){paste("$", x, sep="")})+
+  labs(x = "Quantidade (q)",
+       y = "Preço (p)")+
+  theme_classic()
+
+cs+geom_polygon(data=cs_1, aes(x=x,y=y), fill="blue", alpha=0.5)
+```
+
+]
+
+---
+
+# Excedente do Consumidor (2 de 5)
+
+.pull-left[
+
+$$\begin{align*}
+CS&=\frac{1}{2}bh\\
+CS&=\frac{1}{2}(5-0)(\$10-\$5)\\
+CS&=\$12.50\\
+\end{align*}$$
+
+]
+
+.pull-right[
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.retina=3}
+cs+geom_polygon(data=cs_1, aes(x=x,y=y), fill="blue", alpha=0.5)
+```
+
+]
+
+---
+
+# Excedente do Consumidor (3 de 5)
+
+.pull-left[
+
+- Um incremento no preço de mercado *reduz* o excedente do consumidor
+
+$$\begin{align*}
+EC'&=\frac{1}{2}bh\\
+EC'&=\frac{1}{2}(3-0)(\$10-\$7)\\
+EC'&=\$4.50\\
+\end{align*}$$
+
+]
+
+.pull-right[
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.retina=2}
+cs_2<-tribble(
+  ~x, ~y,
+  0, 10,
+  0, 7,
+  3, 7
+)
+
+cs+geom_polygon(data=cs_2, aes(x=x,y=y), fill="blue", alpha=0.5)+
+  geom_segment(x=0, xend=3, y=7, yend=7, size=1, linetype="dotted")+
+  geom_segment(x=3, xend=3, y=0, yend=7, size=1, linetype="dotted")
+```
+
+]
+
+---
+
+# Excedente do Consumidor (4 de 5)
+
+.pull-left[
+
+- Uma redução no preço de mercado *reduz* o excedente do consumidor
+
+$$\begin{align*}
+EC'&=\frac{1}{2}bh\\
+EC'&=\frac{1}{2}(7-0)(\$10-\$3)\\
+EC'&=\$24.50\\
+\end{align*}$$
+
+]
+
+.pull-right[
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.retina=2}
+cs_3<-tribble(
+  ~x, ~y,
+  0, 10,
+  0, 3,
+  7, 3
+)
+
+cs+geom_polygon(data=cs_3, aes(x=x,y=y), fill="blue", alpha=0.5)+
+  geom_segment(x=0, xend=7, y=3, yend=3, size=1, linetype="dotted")+
+  geom_segment(x=7, xend=7, y=0, yend=3, size=1, linetype="dotted")
+```
+
+]
+
+---
+
+# Excedente do Consumidor (5 de 5)
+
+.pull-left[
+.smallest[
+- Uma curva de demanda relativamente .hi-purple[inelastica] produz *mais* excedente do consumidor
+
+$$\begin{align*}
+EC&=\frac{1}{2}(5-0)(\$10-\$5)\\
+EC&=\$12.50\\
+\end{align*}$$
+
+]
+]
+.pull-right[
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.retina=2}
+cs+geom_polygon(data=cs_1, aes(x=x,y=y), fill="blue", alpha=0.5)
+```
+
+]
+
+---
+
+# Excedente do Consumidor (5 de 5)
+
+.pull-left[
+.smallest[
+- Uma curva de demanda relativamente .hi-purple[inelastica] produz *mais* excedente do consumidor
+
+$$\begin{align*}
+EC&=\frac{1}{2}(5-0)(\$10-\$5)\\
+EC&=\$12.50\\
+\end{align*}$$
+
+- Uma curva de demanda relativamente .hi-purple[elastica] produz *menos* excedente do consumidor
+
+$$\begin{align*}
+EC&=\frac{1}{2}(5-0)(\$7-\$5)\\
+EC&=\$5.00\\
+\end{align*}$$
+]
+]
+
+.pull-right[
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.retina=2}
+demand_el=function(x){7-0.4*x}
+cs_el<-tribble(
+  ~x, ~y,
+  0, 7,
+  0, 5,
+  5, 5
+)
+
+cs+geom_polygon(data=cs_el, aes(x=x,y=y), fill="blue", alpha=0.5)+
+    stat_function(fun=demand_el, geom="line", size=2, color = "darkblue")+
+    geom_label(aes(x=9,y=demand_el(9)), color = "darkblue", label="Demanda Elástica", size = 5)
+
+```
+
+]
+
+---
+
+# Excedente do Produtor (1 de 5)
+
+.pull-left[
+
+- A curva de oferta mede quanto o produtor estaria **disposto a aceitar - WTA** de pagamento por diferentes quantidades
+
+- Em geral, o produtor irá receber *mais* (o preço de equilíbrio $p^*)$ do mínimo que estaria **disposto a aceitar - WTA**
+
+
+
+- A diferença é o .hi[excedente do produtor]
+
+$$EP=p^*-WTA$$
+
+]
+
+.pull-right[
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.retina=2}
+
+ps_1<-tribble(
+  ~x, ~y,
+  0, 0,
+  0, 5,
+  5, 5
+)
+
+ps<-ggplot(data.frame(x=c(0,10)), aes(x=x))+
+  stat_function(fun=supply_1, geom="line", size=2, color = "red")+
+    geom_label(aes(x=9,y=supply_1(9)), color = "red", label="Oferta = Min WTA", size = 5)+
+  geom_segment(x=0, xend=5, y=5, yend=5, size=1, linetype="dotted")+
+  geom_segment(x=5, xend=5, y=0, yend=5, size=1, linetype="dotted")+
+    scale_x_continuous(breaks=seq(0,10,1),
+                     limits=c(0,10),
+                     expand=expand_scale(mult=c(0,0.1)))+
+  scale_y_continuous(breaks=seq(0,10,1),
+                     limits=c(0,10),
+                     expand=expand_scale(mult=c(0,0.1)),
+                     labels = function(x){paste("$", x, sep="")})+
+  labs(x = "Quantidade (q)",
+       y = "Preço (p)")+
+  theme_classic()
+
+ps+geom_polygon(data=ps_1, aes(x=x,y=y), fill="red", alpha=0.5)
+```
+
+]
+
+---
+
+# Excedente do Produtor (2 de 5)
+
+.pull-left[
+
+$$\begin{align*}
+EP&=\frac{1}{2}bh\\
+EP&=\frac{1}{2}(5-0)(\$5-\$0)\\
+EP&=\$12.50\\
+\end{align*}$$
+
+]
+
+.pull-right[
+
+```{r, fig.retina=2}
+ps+geom_polygon(data=ps_1, aes(x=x,y=y), fill="red", alpha=0.5)
+```
+
+]
+
+---
+
+# Excedente do Produtor (3 de 5)
+
+.pull-left[
+
+- Un incremento no preço de mercado *incrementa* também o excedente do produtor
+
+$$\begin{align*}
+EP'&=\frac{1}{2}bh\\
+EP'&=\frac{1}{2}(7-0)(\$7-\$0)\\
+EP'&=\$24.50\\
+\end{align*}$$
+
+]
+
+.pull-right[
+
+```{r, fig.retina=2}
+ps_2<-tribble(
+  ~x, ~y,
+  0, 0,
+  0, 7,
+  7, 7
+)
+
+ps+geom_polygon(data=ps_2, aes(x=x,y=y), fill="red", alpha=0.5)+
+  geom_segment(x=0, xend=7, y=7, yend=7, size=1, linetype="dotted")+
+  geom_segment(x=7, xend=7, y=0, yend=7, size=1, linetype="dotted")
+```
+
+]
+
+---
+
+# Excedente do Produtor (4 de 5)
+
+.pull-left[
+
+- Uma redução no preço de mercado *reduz* o excedente do produtor
+
+$$\begin{align*}
+EP'&=\frac{1}{2}bh\\
+EP'&=\frac{1}{2}(3-0)(\$3-\$0)\\
+EP'&=\$4.50\\
+\end{align*}$$
+
+]
+
+.pull-right[
+
+```{r, fig.retina=2}
+ps_3<-tribble(
+  ~x, ~y,
+  0, 0,
+  0, 3,
+  3, 3
+)
+
+ps+geom_polygon(data=ps_3, aes(x=x,y=y), fill="red", alpha=0.5)+
+  geom_segment(x=0, xend=3, y=3, yend=3, size=1, linetype="dotted")+
+  geom_segment(x=3, xend=3, y=0, yend=3, size=1, linetype="dotted")
+```
+
+]
+
+---
+
+# Excedente do Produtor (5 de 5)
+
+.pull-left[
+.smallest[
+- Uma curva de oferta relativamente .hi-purple[inelastica] produz *mais* excedente do produtor
+
+$$\begin{align*}
+EP&=\frac{1}{2}(5-0)(\$5-\$0)\\
+EP&=\$12.50\\
+\end{align*}$$
+
+]
+]
+.pull-right[
+
+```{r, fig.retina=2}
+ps+geom_polygon(data=ps_1, aes(x=x,y=y), fill="red", alpha=0.5)
+```
+
+]
+
+---
+
+# Excedente do Produtor (5 de 5)
+
+.pull-left[
+
+.smallest[
+- Uma curva de oferta relativamente .hi-purple[inelastica] produz *mais* excedente do produtor
+
+$$\begin{align*}
+EP&=\frac{1}{2}(5-0)(\$5-\$0)\\
+EP&=\$12.50\\
+\end{align*}$$
+
+- Uma curva de oferta relativamente .hi-purple[elastica] produz *menos* excedente do produtor
+
+$$\begin{align*}
+EP&=\frac{1}{2}(5-0)(\$5-\$3)\\
+EP&=\$5.00\\
+\end{align*}$$
+
+]
+]
+.pull-right[
+
+```{r, fig.retina=2}
+supply_el=function(x){3+0.4*x}
+ps_el<-tribble(
+  ~x, ~y,
+  0, 5,
+  0, 3,
+  5, 5
+)
+
+ps+geom_polygon(data=ps_el, aes(x=x,y=y), fill="red", alpha=0.5)+
+    stat_function(fun=supply_el, geom="line", size=2, color = "darkred")+
+    geom_label(aes(x=9,y=supply_el(9)), color = "darkred", label="Oferta Elástica", size = 5)
+
+```
+
+]
+
+---
+class: middle, center, inverse
+
+# Excedente do Mercado
+
+---
+# Excedente do Mercado
+
+.pull-left[
+
+- O excedente do mercado é um indicador importante de bem-estar para os economistas
+
+- Em outras palavras, refere-se ao bem-estar da Sociedade como um todo
+
+- Quanto maior for o EM, melhor está a Sociedade $$EM=EC+EP$$
+
+- $$EM = 12,5 + 12,5 = 25$$
+
+]
+
+.pull-right[
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.retina=2}
+
+ps_1<-tribble(
+  ~x, ~y,
+  0, 0,
+  0, 5,
+  5, 5
+)
+
+em <- ggplot(data.frame(x=c(0,10)), aes(x=x))+
+  stat_function(fun=supply_1, geom="line", size=2, color = "red")+
+    geom_label(aes(x=9,y=supply_1(9)), color = "red", label="Oferta = Min WTA", size = 5)+
+  stat_function(fun=demand_1, geom="line", size=2, color = "blue")+
+    geom_label(aes(x=9,y=demand_1(9)), color = "blue", label="Demanda = Max WTP", size = 5)+
+  geom_segment(x=0, xend=5, y=5, yend=5, size=1, linetype="dotted")+
+  geom_segment(x=5, xend=5, y=0, yend=5, size=1, linetype="dotted")+
+    scale_x_continuous(breaks=seq(0,10,1),
+                     limits=c(0,10),
+                     expand=expand_scale(mult=c(0,0.1)))+
+  scale_y_continuous(breaks=seq(0,10,1),
+                     limits=c(0,10),
+                     expand=expand_scale(mult=c(0,0.1)),
+                     labels = function(x){paste("$", x, sep="")})+
+  labs(x = "Quantidade (q)",
+       y = "Preço (p)")+
+  theme_classic()
+
+em +
+  geom_polygon(data=ps_1, aes(x=x,y=y), fill="red", alpha=0.5)+
+  geom_polygon(data=cs_1, aes(x=x,y=y), fill="blue", alpha=0.5)
+
+```
+
+]
+
+---
+class: center, middle
+
+# Fim do Apêndice
+
+
