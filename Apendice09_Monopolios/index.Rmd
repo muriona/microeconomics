@@ -1,6 +1,6 @@
 ---
 title: "Monopólios"
-subtitle: "Apêndice - Aula 12"
+subtitle: "Apêndice"
 author: "Prof. Mauricio Uriona Maldonado"
 institute: "EPS 5222"
 date: "`r format(Sys.Date(), '%d/%m/%Y')`"
@@ -19,16 +19,25 @@ output:
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE,
         echo = FALSE, message = FALSE, warning = FALSE)
+
+knitr::opts_chunk$set(echo=F,
+                      message=F,
+                      warning=F,
+                      fig.retina = 2,
+                      fig.align = "center")
+
 ```
 
 ```{r xaringan-themer, include=FALSE, warning = FALSE}
-library(xaringanthemer)
-style_mono_accent(
-  base_color = "#e32d91",
-  header_font_google=google_font("Montserrat"),
-  text_font_google=google_font("Source Sans Pro"),
-  text_font_size = "24px"
-)
+library("tidyverse")
+library("mosaic")
+library("ggrepel")
+library("fontawesome")
+
+xaringanExtra::use_tile_view()
+xaringanExtra::use_tachyons()
+xaringanExtra::use_freezeframe()
+xaringanExtra::use_share_again()
 ```
 
 # Função de Demanda e Função de Receita
@@ -57,7 +66,7 @@ lucro <- function(q) (40*q) - q^2 - 50 - q^2
 
 # Graficando a Função de Demanda:
 
-```{r demanda, echo = FALSE, warning=FALSE, message = FALSE, fig.width=8, fig.height=4, dpi = 300}
+```{r demanda, echo = FALSE, warning=FALSE, message = FALSE, fig.width=8, fig.height=5}
 
 dados <- data.frame(q=seq(from=0, to=20, by=0.1))
 
@@ -68,8 +77,8 @@ dados <- dados %>%
 dados %>% 
   ggplot(aes(q, D))+
   geom_line(size=1.2, color="#e32d91")+
-  theme_bw()+
-  labs(y="Preço (R$)", x="Quantidade (milhares de unidades)")
+  theme_classic()+
+  labs(y="Preço (R$ por unidade)", x="Quantidade (milhares de unidades)")
 
 ```
 
@@ -79,7 +88,7 @@ dados %>%
 
 Note que o eixo "y" está em milhares:
 
-```{r, echo = FALSE, warning=FALSE, message = FALSE, fig.width=8, fig.height=4, dpi =300}
+```{r, echo = FALSE, warning=FALSE, message = FALSE, fig.width=8, fig.height=5}
 library(wesanderson)
 dados %>% 
   mutate(CT = custo(q),
@@ -92,7 +101,7 @@ dados %>%
   scale_color_manual(values = wes_palette("GrandBudapest1"))+
   geom_dl(aes(label = Variaveis), method = "smart.grid")+
   labs(x="Quantidade (milhares de unidades)", y="Milhares de R$")+
-  theme_bw()+
+  theme_classic()+
     theme(legend.position = "none")
 ```
 
@@ -135,11 +144,9 @@ datatable(dados, options = list(
 
 ---
 
-# 
+# Agora vamos graficar:
 
-Agora vamos graficar:
-
-```{r dpi = 300, fig.width=8, fig.height=4, echo = FALSE, warning=FALSE, message = FALSE}
+```{r fig.width=8, fig.height=5, echo = FALSE, warning=FALSE, message = FALSE}
 
 plot <- dados %>% 
   pivot_longer(-q, names_to = "Variaveis", values_to="Valor") %>% 
@@ -147,8 +154,8 @@ plot <- dados %>%
   geom_line(size=1.2)+
   scale_color_manual(values = wes_palette("Cavalcanti1"))+
   geom_dl(aes(label = Variaveis), method = "smart.grid")+
-  labs(x="Quantidade (milhares de unidades)", y="R$")+
-  theme_bw()+
+  labs(x="Quantidade (milhares de unidades)", y="R$ por unidade")+
+  theme_classic()+
     theme(legend.position = "none")+
   scale_y_continuous(limits = c(0, 50))
 
@@ -164,20 +171,92 @@ optimal_q <- uniroot(function(x) CMg(x) - RMg(x),
 - Agora podemos calcular o ponto onde o lucro é maximizado, ou seja, a quantidade ótima é `r optimal_q$root` e o preço ótimo será: `r demanda(optimal_q$root)`
 
 ---
+# Ponto ótimo para o monopolista
 
-# 
+```{r fig.width=8, fig.height=5}
+plot +
+  geom_vline(xintercept = optimal_q$root,
+             linetype = 3)+
+  geom_hline(yintercept = demanda(optimal_q$root),
+             linetype = 3)
+```
+--
 
-Desta forma, o lucro será igual à área em cinza.
+- O ponto máximo de produção será onde CMg = RMg, porém o monopolista pode cobrar um preço maior a essa quantidade, neste caso, P = 30 R$ por unidade.
 
-```{r dpi = 300, fig.width=8, fig.height=4, echo = FALSE, warning=FALSE, message = FALSE}
+---
+# Receita Total
+
+```{r fig.width=8, fig.height=5}
+plot +
+  geom_vline(xintercept = optimal_q$root,
+             linetype = 3)+
+  geom_hline(yintercept = demanda(optimal_q$root),
+             linetype = 3)+
+  geom_rect(aes(xmin=0, xmax=optimal_q$root, 
+                ymin=0, 
+                ymax=demanda(optimal_q$root)),
+            fill = "blue", color = "blue",
+            alpha=0.02)
+```
+
+---
+# Custo Total
+
+```{r fig.width=8, fig.height=5}
+plot +
+  geom_vline(xintercept = optimal_q$root,
+             linetype = 3)+
+  geom_hline(yintercept = demanda(optimal_q$root),
+             linetype = 3)+
+  geom_rect(aes(xmin=0, xmax=optimal_q$root, 
+                ymin=0, 
+                ymax=CMe(optimal_q$root)),
+            fill = "#e32d91", color = "#e32d91",
+            alpha=0.02)
+```
+
+---
+
+# Lucro Total
+
+
+```{r fig.width=8, fig.height=5}
 
 plot+
+  geom_vline(xintercept = optimal_q$root,
+             linetype = 3)+
+  geom_hline(yintercept = demanda(optimal_q$root),
+             linetype = 3)+
   geom_rect(aes(xmin=0, xmax=optimal_q$root, 
                 ymin=15, 
                 ymax=demanda(optimal_q$root)),
-            fill = "gray", color = "gray",
+            fill = "yellow", color = "yellow",
             alpha=0.02)
 ```
+
+---
+# RT, CT, e L
+
+```{r}
+RT <- 1000*receita(optimal_q$root)
+CT <- 1000*custo(optimal_q$root)
+L <- RT - CT
+```
+
+- A Receita Total é igual a 300.000 R$ por mês
+
+--
+
+- O Custo Total é igual a 150.000 R$ por mês
+
+--
+
+- O Lucro é igual a 150.000 R$ por mês
+
+--
+
+- Por fim, importante lembrar que essas informações sempre serão de um determinado periodo, por exemplo RT, CT e Lucro por mês.
 
 ---
 
