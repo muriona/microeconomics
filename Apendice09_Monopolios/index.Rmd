@@ -1,5 +1,5 @@
 ---
-title: "Monopólios"
+title: "Monopólios e Competição Monopolística"
 subtitle: "Apêndice"
 author: "Prof. Mauricio Uriona Maldonado"
 institute: "EPS 5222"
@@ -74,11 +74,13 @@ dados <- data.frame(q=seq(from=0, to=20, by=0.1))
 dados <- dados %>% 
   mutate(D = demanda(q)) 
 
-dados %>% 
+monopolio_plot <- dados %>% 
   ggplot(aes(q, D))+
   geom_line(size=1.2, color="#e32d91")+
   theme_classic()+
   labs(y="Preço (R$ por unidade)", x="Quantidade (milhares de unidades)")
+
+monopolio_plot
 
 ```
 
@@ -257,6 +259,131 @@ L <- RT - CT
 --
 
 - Por fim, importante lembrar que essas informações sempre serão de um determinado periodo, por exemplo RT, CT e Lucro por mês.
+
+---
+
+class: inverse, center, middle
+
+# Competição Monopolística
+
+---
+# Competição Monopolística
+
+A Função de Demanda é a mesma que no Monopólio, pois cada empresa consegue definir seu próprio preço:
+
+```{r fig.width=8, fig.height=5}
+monopolio_plot
+```
+
+---
+# RMg, CMg, CMe
+
+Da mesma forma, vamos assumir os mesmos custos e RMg
+
+```{r fig.width=8, fig.height=5}
+plot
+```
+
+---
+# Lucro Total
+
+No curto prazo, o lucro total será a área amarela = R$ 150 mil (o mesmo que no monopólio)
+
+```{r fig.width=8, fig.height=5}
+
+plot+
+  geom_vline(xintercept = optimal_q$root,
+             linetype = 3)+
+  geom_hline(yintercept = demanda(optimal_q$root),
+             linetype = 3)+
+  geom_rect(aes(xmin=0, xmax=optimal_q$root, 
+                ymin=15, 
+                ymax=demanda(optimal_q$root)),
+            fill = "yellow", color = "yellow",
+            alpha=0.02)
+```
+
+---
+# Lucro Total
+
+- Mas no longo prazo...
+
+--
+
+- ...existem outros concorrentes que entrarão neste mercado, pois os lucros somam R$ 150 mil
+
+---
+# Lucro igual a zero
+
+- A Curva da demanda se descolacará para a esquerda, até tocar o CMe:
+
+```{r echo = FALSE, warning=FALSE, message = FALSE}
+demanda <- function(q) 20 - q
+
+dados <- dados %>% 
+  mutate(D = demanda(q)) 
+
+RMg <- function(q) 20 - 2 *q
+
+CMg <- Deriv(custo, "q")
+
+CMe <- function(q) 50/q + q
+
+RMe <- function(q) receita(q)/q
+
+dados <- dados %>% 
+  mutate(CMg = CMg(q),
+         RMg = RMg(q),
+         CMe = round(CMe(q),1)) 
+```
+
+
+```{r fig.width=8, fig.height=5}
+plot2 <- dados %>% 
+  pivot_longer(-q, names_to = "Variaveis", values_to="Valor") %>% 
+  ggplot(aes(q,Valor, color=Variaveis))+
+  geom_line(size=1.2)+
+  geom_point(aes(x=5,y=15),colour="black", size=5)+
+  geom_point(aes(x=5,y=15),colour="lightgray", size=2)+
+  geom_segment(aes(x=5, y=0, xend = 5, yend = 15), linetype = "dashed", color="#e32d91")+
+  geom_segment(aes(x=0, y=15, xend = 5, yend = 15), linetype = "dashed", color="#e32d91")+
+  scale_color_manual(values = wes_palette("Cavalcanti1"))+
+  geom_dl(aes(label = Variaveis), method = "smart.grid")+
+  labs(x="Quantidade (milhares de unidades)", y="R$")+
+  theme_classic()+
+    theme(legend.position = "none")+
+  scale_y_continuous(limits = c(0, 50))
+
+plot2
+```
+
+---
+
+# Lucro igual a zero
+
+- Em outras palavras, a demanda vai se deslocar nesta proporção:
+
+```{r fig.width=8, fig.height=5}
+demanda <- function(q) 40 - q
+
+demanda2 <- function(q) 20 - q
+
+dados <- dados %>% 
+  mutate(D = demanda(q),
+         D_2 = demanda2(q)) %>% 
+  select(-3:-5)
+
+dados %>% 
+  pivot_longer(-q) %>% 
+  ggplot(aes(q, value, color=name, labels=name))+
+  geom_line(size=1.2)+
+  scale_color_manual(values = wes_palette("Cavalcanti1"))+
+  geom_dl(aes(label = name), method = "smart.grid")+
+  labs(x="Quantidade (milhares de unidades)", y="R$")+
+  theme_classic()+
+    theme(legend.position = "none")+
+  scale_y_continuous(limits = c(0, 50))
+```
 
 ---
 

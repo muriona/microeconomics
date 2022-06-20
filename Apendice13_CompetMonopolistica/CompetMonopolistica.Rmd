@@ -21,15 +21,6 @@ options(htmltools.dir.version = FALSE,
         echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
-```{r xaringan-themer, include=FALSE, warning = FALSE}
-library(xaringanthemer)
-style_mono_accent(
-  base_color = "#e32d91",
-  header_font_google=google_font("Montserrat"),
-  text_font_google=google_font("Source Sans Pro"),
-  text_font_size = "24px"
-)
-```
 
 # Função de Demanda e Função de Receita
 
