@@ -42,11 +42,13 @@ xaringanExtra::use_share_again()
 
 # Função de Demanda e Função de Receita
 
-- Vamos construir algumas funções de custo e receita. Vamos assumir que a função de demanda seja $Q = 40 - P$, isto significa que rearranjando os termos, a função de demanda seria igual a $P = 40 - Q$
+- Vamos construir algumas funções de custo e receita. Vamos assumir que a função de demanda seja $$Q = 40 - P$$, isto significa que rearranjando os termos, a função de demanda seria igual a $$P = 40 - Q$$
 
-- A Receita Total será portanto $R = 40Q - Q^2$ pois a  $\frac{d}{dQ} 40Q - Q^2 = 40 - Q$ e a Função de Custo Total será $C = 50 + Q^2$
+- A Receita Total será portanto $$RT = 40Q - Q^2$$ pois $RT = PQ = (40 - Q)Q$ 
 
-- E Lucro será igual a $L = R - C$
+- A Função de Custo Total será $$CT = 50 + Q^2$$
+
+- E Lucro será igual a $$\pi = RT - CT$$
 
 ```{r echo = FALSE, warning=FALSE, message = FALSE}
 library(tidyverse)
@@ -78,7 +80,8 @@ monopolio_plot <- dados %>%
   ggplot(aes(q, D))+
   geom_line(size=1.2, color="#e32d91")+
   theme_classic()+
-  labs(y="Preço (R$ por unidade)", x="Quantidade (milhares de unidades)")
+  labs(y="Preço (R$ por unidade)", x="Quantidade (milhares de unidades)")+
+  scale_y_continuous(limits = c(0,40))
 
 monopolio_plot
 
