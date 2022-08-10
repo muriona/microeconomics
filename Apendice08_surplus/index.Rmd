@@ -127,6 +127,8 @@ cs<-ggplot(data.frame(x=c(0,10)), aes(x=x))+
   theme_classic()
 
 cs+geom_polygon(data=cs_1, aes(x=x,y=y), fill="blue", alpha=0.5)
+
+
 ```
 
 ]

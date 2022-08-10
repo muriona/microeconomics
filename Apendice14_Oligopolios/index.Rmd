@@ -1,0 +1,334 @@
+---
+title: "Oligopóios e Modelo de Cournot"
+subtitle: "Apêndice"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE,
+        echo = FALSE, message = FALSE, warning = FALSE)
+
+knitr::opts_chunk$set(echo=F,
+                      message=F,
+                      warning=F,
+                      fig.retina = 2,
+                      fig.align = "center")
+
+```
+
+```{r xaringan-themer, include=FALSE, warning = FALSE}
+library("tidyverse")
+library("mosaic")
+library("ggrepel")
+library("fontawesome")
+
+xaringanExtra::use_tile_view()
+xaringanExtra::use_tachyons()
+xaringanExtra::use_freezeframe()
+xaringanExtra::use_share_again()
+```
+
+# Modelo de Cournot
+
+- Em 1838 Augustin Cournot apresentou o primeiro modelo de oligopólio
+
+--
+
+- O Modelo de Cournot retrata um duopólio no qual as firmas produzem uma mercadoria homogênea, conhecem a curva de demanda de mercado e tomam, simultaneamente, suas decisões de quanto produzir, sendo que cada firma assume como fixa a quantidade produzida pela outra
+
+--
+
+- Para melhor compreender o Modelo Cournot, considere duas empresas A e B, com custos marginais constantes $c$ que produzem produtos idênticos.
+
+--
+
+- As empresas determinam simultaneamente a quantidade a ser produzida $(q_{A},q_{B})$, sendo que cada uma defronta-se com a curva de demanda:
+
+$$P(Q)=W-Q$$
+- onde $W>0$ 
+
+---
+# Modelo de Cournot
+
+- O preço a ser cobrado é aquele que iguala a demanda e oferta, constituida pela produção das duas firmas, $Q=q_{A}+q_{B}$, portanto, o preço resultante do mercado seria:
+
+$$P=W-(q_{A}+q_{B})$$
+--
+- Para maximizar seus lucros, a empresa A iguala sua RMg a seu CMg. A $RT_{A}$ será é dada por:
+
+$$RT_{A}=Pq_{A}=Wq_{A}-(q_{A}+q_{B})q_{A}$$
+--
+- Portanto, sua RMg será:
+
+$$RMg_{A}=\frac{d}{d q_{A}}RT_{A}=W-2q_{A}-q_{B}$$
+---
+# Igualando RMg e CMg
+
+- Ao igualar RMg e CMg:
+
+$$W-2q_{A}-q_{B}=c$$
+
+--
+- Reorganizando para $q_{A}$:
+
+$$q_{A}=\frac{W-q_{B}-c}{2}$$
+--
+
+- Esta expressão denota que a quantidade maximizadora de lucro da firma A depende de quanto esta acredita que a firma B irá produzir
+
+--
+
+- Assumindo que a firma B realiza o mesmo raciocínio, a quantidade otimizadora de lucro de B será:
+
+$$q_{B}=\frac{W-q_{A}-c}{2}$$
+---
+# Interdependência
+
+- Ambas as equações de quantidade demonstram a interdependência entre as estratégias de A e B
+
+--
+
+- No equilíbrio de Cournot cada firma, nenhum dos dois duopolistas tem incentivo de modificar seus níveis de produção (pois produzem maximizando o lucro)
+
+--
+
+- Para resolver as quantidades ótimas, podemos resolver o sistema de equações anterior
+
+--
+
+$$q_{A}=q_{B}= \frac{W-c}{3}$$
+--
+
+- Se essas são as quantidades ótimas, o preço de mercado será:
+
+$$P=W-Q=W-2(\frac{W-c}{3})=\frac{W+2c}{3}$$
+--
+
+- E o Lucro $\pi$ de cada firma será:
+
+$$\pi_{A}=\pi_{B}=\frac{(W-c)(W+2c)}{9}$$
+---
+# E na situação de Cartel?
+
+- Na situação de Cartel, ambas empresas devem decidir conjuntamente quanto produzir
+
+--
+
+- Vamos assumir que as firmas A e B resolvem deixar de competir por quantidade e passam a agir em conjunto
+
+--
+
+- Seguindo esta estratégia e considerando a mesma curva de demanda e o mesmo custo de produção $c$, verifica-se o seguinte problema de maximização:
+
+$$\max \pi(Q,P)$$
+
+$$\max RT - CT$$
+$$\max (W-Q)Q-cQ$$
+
+--
+
+- Admitindo a diferenciabilidade (até a 2a ordem) desta função 'lucro' com relação à variável $Q$, a condição de 1a ordem  é 
+
+$$\frac{\partial \pi}{\partial Q}=W-2Q-c=0$$
+---
+# E na situação de Cartel?
+
+- A quantidade de equilíbrio no Cartel será:
+
+$$Q=\frac{W-c}{2}$$
+--
+
+- E o preço de equilíbrio será: $P=\frac{W+c}{2}$ 
+
+--
+
+- E o Lucro Total da indústria será: $\pi=\frac{(W-c)^2}{4}$
+
+--
+
+- Se as duas firmas encontram-se em Cartel, dividirão a mesma proporção de lucros, portanto, para a Firma A o Lucro será:
+
+$$\pi_{A}=\frac{(W-c)^2}{8}$$
+--
+
+- Observa-se que o lucro obtido em Cartel será maior ao lucro obtido sob competição com o modelo de Cournot
+
+---
+# O dilema do prisioneiro
+
+- Cabe ressaltar que a solução colusiva do Cartel $q_{A}=q_{B}=\frac{(W-c)}{4}$ pode não ser a melhor opção individualmente para a firma
+
+--
+
+- Por exemplo se a Firma A decidisse produzir $q_{A}=\frac{(W-c)}{4}$ a Firma B pode decidir não produzir o mesmo
+
+--
+
+- Relembrando a equação $q_{B}=\frac{W-q_{A}-c}{2}$, a decisão ótima de produção de B seria:
+
+$$q_{B}(q_{A})=\frac{1}{2}[W-c-\frac{(W-c)}{4}]=\frac{3(W-c)}{8}$$
+--
+
+- Neste caso, a Firma B obteria maiores lucros ao 'trair' o acordado.
+
+--
+
+- Em casos onde a demanda é muito elástica, as firmas tendem a manter o conluio. No caso do setor do Petróleo a demanda é muito elástica, dificultando na prática, o funcionamento da OPEP
+
+---
+# Vamos exemplificar com números
+
+### Para o caso da competição Cournot
+
+- Vamos assumir que a Curva de Demanda de mercado seja: $D=150-Q$ (em milhões de barris por dia) e o Cmg = CMe = 35 dólares por barril
+
+--
+```{r echo = FALSE, fig.height=5, fig.width=8}
+library(Deriv)
+library(tidyverse)
+library(plotly)
+
+W <- 150
+c <- 35
+
+demand <- function(Q){W-(Q)}
+
+receita <- function(Q){(W-(Q))*Q}
+
+RMga <- Deriv(receita, "Q")
+
+data <- data.frame(Q=1:100)
+
+data <- data %>% 
+  mutate(D = demand(Q),
+    RMga = RMga(Q),
+    CMg = c)
+
+
+
+q_otimo <- (W-c)/3
+
+p_otimo <- (W+(2*c))/3
+
+lucro <- p_otimo*q_otimo
+lucroeq <- (W-c)*(W+2*c)/9
+```
+
+- A quantidade ótima de acordo com o Modelo de Cournot será (em milhões de barris por dia): 
+
+$$q_{A}=\frac{(W-c)}{3}=38,33$$
+
+--
+
+- E o preço ótimo será: $P=\frac{W+2c}{3}=73,33$ dólares por barril
+
+--
+
+- E o Lucro de cada firma: $\pi_{A}=\frac{(W-c)(W+2c)}{9}=2.811$ milhões de dólares por dia
+
+---
+# Vamos exemplificar com números
+
+### Para o caso do Cartel
+
+```{r echo=FALSE}
+
+Q_car <- (W-c)/2
+
+P_car <- (W+c)/2
+
+Qa_car <- Q_car/2
+
+Lucro_car <- Q_car*P_car
+
+Lucro_a_car <- Lucro_car/2
+
+Qb_car <- 3*(W-c)/8
+
+Lucro_b_car <- Qb_car*P_car
+```
+
+- A quantidade ótima será $Q_{car}=\frac{W-c}{2}=57,5$ milhões de barris por dia
+
+--
+
+- Cada empresa dividiria a quantidade, produzindo $q_{carA}=\frac{W-c}{4}=28,75$ milhões de barris por dia
+
+--
+
+- O preço ótimo será $P_{car}=\frac{W+c}{2}=92,5$ dólares por barril
+
+--
+
+- O Lucro total do mercado será $\pi_{car}=Q_{car}P_{car}=5.318$ milhões de dólares por dia
+
+--
+
+- O Lucro da Firma A será: $\pi_{carA}=2.659$ milhões de dólares por dia
+
+---
+# Vamos exemplificar com números
+
+### Para o caso do Cartel
+
+- Como foi discutido, a Firma B teria incentivos para 'trair' o acordo, pois se a Firma A produzisse 28,75 milhões de barris, a Firma B poderia produzir (em milhões de barris por dia):
+
+$$q_{carB}=\frac{3(W-c)}{8}=43,12$$
+--
+
+- E o Lucro da Firma B seria $\pi_{carB}=3.989$ milhões de dólares por dia
+
+---
+# Comparando Cournot x Cartel
+
+- Ao comparar ambos modelos, podemos perceber os ganhos adicionais pela formação do Cartel
+
+--
+
+- Também é possível verificar o incentivo da Firma B para "trair" o acordo do Cartel, produzindo mais e portanto lucrando mais
+
+```{r echo=FALSE}
+library(gt)
+
+data <- data.frame(Q=c(2*q_otimo, Qa_car+Qb_car),
+                   A=c(q_otimo, Qa_car),
+                   B=c(q_otimo, Qb_car),
+                   P=c(p_otimo, P_car),
+                   LucroA=c(lucro, Lucro_a_car),
+                   LucroB=c(lucro, Lucro_b_car),
+                   Tipo=c("Cournot","Cartel"))
+
+data <- data %>% 
+    pivot_longer(cols= 2:3, names_to = "Firma", values_to = "q") %>% pivot_longer(3:4, names_to = "Firma2", values_to = "Lucro") %>% 
+  select(-Firma2) %>% 
+  slice(-2,-3,-6,-7)
+  
+
+data %>% 
+  group_by(Tipo) %>% 
+  gt() %>% 
+  fmt_number(
+    columns = c(Q,P,q,Lucro),
+    decimals = 2
+  )
+```
+
+---
+
+class: center, middle
+
+# Fim do Apêndice
+
+Prof. Mauricio Uriona Maldonado

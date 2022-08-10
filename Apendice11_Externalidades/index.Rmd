@@ -1,0 +1,178 @@
+---
+title: "Externalidades"
+subtitle: "Apêndice"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE,
+        echo = FALSE, message = FALSE, warning = FALSE)
+
+knitr::opts_chunk$set(echo=F,
+                      message=F,
+                      warning=F,
+                      fig.retina = 2,
+                      fig.align = "center")
+
+```
+
+```{r xaringan-themer, include=FALSE, warning = FALSE}
+library("tidyverse")
+library("mosaic")
+library("ggrepel")
+library("fontawesome")
+
+xaringanExtra::use_tile_view()
+xaringanExtra::use_tachyons()
+xaringanExtra::use_freezeframe()
+xaringanExtra::use_share_again()
+```
+
+# Mercado de Refino de Petróleo
+
+- O mercado de refino de petróleo é um dos principais poluidores da água.
+
+- Entre os custos externos decorrentes estão altos riscos de saúde para as pessoas que usam a água dos rios e córregos.
+
+- Vamos supor que o mercado de refino de petróleo seja competitivo onde:
+
+  - Oferta: $$P=10+0,075Q$$
+  - Demanda: $$P=42-0,125Q$$
+  
+Onde $Q$ está em milhares de barris por dia e $P$ é o preço do barril em $
+
+```{r echo = FALSE, warning=FALSE, message = FALSE}
+library(tidyverse)
+library(Deriv)
+library(directlabels)
+library(cowplot) # for arranging plots
+library(DT)
+
+demanda <- function(q) 42 - (0.125*q)
+
+oferta <- function(q){10+(0.075*q)}
+
+
+```
+
+---
+
+# Graficando o equilíbrio do mercado
+
+```{r demanda, echo = FALSE, warning=FALSE, message = FALSE, fig.width=8, fig.height=7, fig.align='center', fig.retina=2}
+
+library(plotly)
+dados <- data.frame(q=seq(from=0, to=200, by=1))
+
+
+dados <- dados %>% 
+  mutate(D = demanda(q),
+         O = oferta(q)) 
+
+optimal <- uniroot(function(x) oferta(x) - demanda(x), c(0,200))
+
+Q_otimo <- optimal$root
+P_otimo <- demanda(Q_otimo)
+
+plot <- dados %>% 
+  pivot_longer(2:3) %>% 
+  ggplot(aes(q, value, color=name))+
+  geom_line(size=1.2)+
+  #geom_vline(xintercept = Q_otimo, linetype =3)+
+  #geom_hline(yintercept = P_otimo, linetype=3)+
+  theme_classic()+
+  labs(y="Preço ($ por barril)", x="Quantidade (milhares de barris por dia)")+
+  scale_color_brewer(palette = "Set1")+
+  annotate("segment", x = Q_otimo, xend = Q_otimo, y = 0, yend = P_otimo,                linetype = 2)+
+  annotate("segment", x = 0, xend = Q_otimo, y = P_otimo, yend = P_otimo,                linetype = 2)+
+  annotate("text", x = Q_otimo, y= -1, label = "160")+
+  annotate("text", x = -1, y= P_otimo, label = "22")+
+  theme(legend.position = "none")
+
+ggplotly(plot)
+
+
+
+
+```
+
+---
+# CMgE
+
+- Para completar a nossa análise, modelamos a função de custo marginal externo como: $$CMgE=0,05Q$$
+
+--
+
+- A interpretação econômica é interessante: como a inclinação é constante, o custo da poluição aumenta a uma taxa de 0,05 $ por barril
+
+--
+
+- Portanto, o verdadeiro custo será a soma do custo marginal privado (CMg) e do custo para a sociedade (CMgE):
+
+$$CMgS = CMg + CMgE$$
+---
+
+# Graficando CMgS
+
+```{r , echo = FALSE, warning=FALSE, message = FALSE, fig.width=8, fig.height=7, fig.align='center', fig.retina=2}
+
+CMgE <- function(q){0.05*q}
+
+CMgS <- function(q) CMgE(q) +oferta(q)
+
+dados <- dados %>% 
+  mutate(CMgS = CMgE(q)+O)
+
+optima_S <- uniroot(function(x) CMgS(x) - demanda(x), c(0,200))
+
+Q_otimoS <- optima_S$root
+P_otimoS <- demanda(Q_otimoS)
+
+plot2 <- dados %>% 
+  pivot_longer(2:4) %>% 
+  ggplot(aes(q, value, color=name))+
+  geom_line(size=1.2)+
+  theme_classic()+
+  labs(y="Preço ($ por barril)", x="Quantidade (milhares de barris por dia)")+
+  scale_color_brewer(palette = "Set1")+
+  annotate("segment", x = Q_otimo, xend = Q_otimo, y = 0, yend = 30,               linetype = 2)+
+  annotate("segment", x = 0, xend = Q_otimo, y = P_otimo, yend = P_otimo,               linetype = 2)+
+  annotate("segment", x = Q_otimoS, xend = Q_otimoS, y = 0, 
+           yend = P_otimoS, linetype = 2)+
+  annotate("segment", x = 0, xend = Q_otimoS, y = P_otimoS, 
+           yend = P_otimoS, linetype = 2)+
+  annotate("text", x = Q_otimo, y= -1, label = "160")+
+  annotate("text", x = Q_otimoS, y= -1, label = "128")+
+  annotate("text", x = -1, y= P_otimo, label = "22")+
+  annotate("text", x = -1, y= P_otimoS, label = "26")+
+  theme(legend.position = "none")
+
+ggplotly(plot2)
+```
+
+---
+
+
+```{r}
+
+```
+
+---
+
+class: center, middle
+
+# Fim do Apêndice
+
+Prof. Mauricio Uriona Maldonado

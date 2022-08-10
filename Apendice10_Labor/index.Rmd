@@ -1,0 +1,146 @@
+---
+title: "Mercados de Fatores"
+subtitle: "Apêndice"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE,
+        echo = FALSE, message = FALSE, warning = FALSE)
+
+knitr::opts_chunk$set(echo=F,
+                      message=F,
+                      warning=F,
+                      fig.retina = 2,
+                      fig.align = "center")
+
+```
+
+```{r xaringan-themer, include=FALSE, warning = FALSE}
+library(tidyverse)
+library(mosaic)
+library(ggrepel)
+library(fontawesome)
+
+xaringanExtra::use_tile_view()
+xaringanExtra::use_tachyons()
+xaringanExtra::use_freezeframe()
+xaringanExtra::use_share_again()
+```
+
+# Relembrando a função de produção
+
+- A função de produção tem a forma $$q=f(K,L)$$
+
+- Assumindo, $K$ fixo no curto prazo, uma função Cobb-Douglas pode ser: $$q=8L^{0.5}$$
+
+---
+# Graficando a Função de Produção
+
+```{r table}
+
+
+w = 150
+
+
+cobb <- function(L){
+  (8)*L^0.5
+}
+
+#cobb <- function(L){
+#  12*(L)-L^2
+#}
+
+data <- data.frame(L=1:30)
+
+data <- data %>% 
+  mutate(Q=cobb(L))
+
+
+data %>% 
+  ggplot(aes(L,Q))+
+  geom_line(size=1.2)+
+  theme_classic()+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+
+
+```
+
+---
+# A Curva de Demanda do Trabalho
+
+```{r}
+library(Deriv)
+
+PML <- Deriv(cobb, "L")
+
+w_func <- function(L){w}
+
+p = 150
+
+data <- data %>% 
+  mutate(PML = PML(L),
+         RMgP = PML(L)*p,
+         w=w)
+
+optimal <- uniroot(function(x) PML(x)*p - w_func(x), c(10,30))
+
+L_otimo <- optimal$root
+Q_otimo <- cobb(L_otimo)
+
+data %>% 
+  pivot_longer(4:5) %>% 
+  ggplot(aes(L, value, color=name))+
+  geom_line(size=1.2)+
+  scale_y_continuous(limits = c(0,300))+
+  theme_classic()+
+  labs(x="Quantidade de Trabalhadores",
+       y="R$ por trabalhador")+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+
+```
+
+---
+# Encontrando a quantidade ótimo de L
+
+```{r}
+data %>% 
+  pivot_longer(4:5) %>% 
+  ggplot(aes(L, value, color=name))+
+  geom_line(size=1.2)+
+  geom_vline(xintercept = L_otimo, linetype = 3)+
+  annotate("text", x=16, y=260, label = "16")+
+  annotate("text", x=16, y=290, label = "trabalhadores")+
+  scale_y_continuous(limits = c(0,300))+
+  theme_classic()+
+  labs(x="Quantidade de Trabalhadores",
+       y="R$ por trabalhador")+
+  theme(axis.text=element_text(size=20),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")
+```
+
+
+---
+
+class: center, middle
+
+# Fim do Apêndice
+
+Prof. Mauricio Uriona Maldonado
