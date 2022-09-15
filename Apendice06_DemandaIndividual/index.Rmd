@@ -433,7 +433,7 @@ varios_budget +
 
 ---
 
-# Construindo a demanda individual (1 de 2)
+# Construindo a demanda individual (1 de 3)
 
 Os pontos máximos que foram calculados a aparecem abaixo:
 
@@ -450,22 +450,48 @@ demanda %>%
 
 
 ---
+# Construindo a demanda individual (2 de 3)
 
-# Construindo a demanda individual (2 de 2)
+De forma geral, com funções do tipo $U(X,Y)=X^{a}Y^{b}$, a função de demanda individual terá a forma:
+
+--
+
+$$X = \frac{a}{a+b}\frac{m}{p_x}$$
+
+--
+
+ou seja se entendemos que $X$ refere-se à quantidade demandada, podemos re-escrever como:
+
+--
+
+$$q_x=m(\frac{a}{a+b})p_x^{-1}$$
+
+---
+
+# Construindo a demanda individual (3 de 3)
 
 - Podemos agora, criar a curva da demanda individual, ao plotar a quantidade $x$ vs o preço $p_x$
 
 
 ```{r, echo=FALSE, fig.height=5, fig.width=8, warning=FALSE, fig.align='center', fig.retina=2}
 
-demanda %>% 
-  ggplot(aes(x,p_x))+
-  geom_line(size=1.2)+
+dindividual <- function(a,b,m,p){
+  m*(a/(a+b))/p
+}
+
+d <- tibble(p=seq(0.1,8, by=0.1))
+
+din_df <- d %>% 
+  mutate(q=dindividual(1,1,80,p)) 
+
+din_df %>% 
+  ggplot(aes(q,p))+
+  geom_line(size=1.2, color = "purple")+
   labs(x = "passagens de ônibus", 
        y = "preço da passagem") +
   scale_x_continuous(expand = c(0, 0), breaks = seq(0, 100, 10)) +
-  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 6, 1)) +
-  coord_cartesian(xlim = c(0, 100), ylim = c(0, 6)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8, 1)) +
+  coord_cartesian(xlim = c(0, 110), ylim = c(0, 9)) +
   theme_classic()+
   theme(axis.text=element_text(size=20),
         axis.title=element_text(size=16, face="bold"),
@@ -476,7 +502,7 @@ demanda %>%
 
 ---
 
-# Construindo a demanda de mercado (1 de 2)
+# Construindo a demanda de mercado (1 de 3)
 
 - A Demanda do mercado será a soma das demandas individuais a cada preço de mercado
 
@@ -484,54 +510,71 @@ demanda %>%
 
 - Lembrando que cada consumidor terá curvas de demanda individual diferentes 
 
+--
+
+- Por exemplo, o consumidor 2 pode ter a função de utilidade $U=X^{0.5}Y^{0.5}$ e um orçamento de 100 Reais
+
+--
+- Já o consumidor 3: $U=X^{0.3}Y^{0.4}$ e um orçamento de 160 Reais
+
+---
+# Construindo a demanda de mercado (2 de 3)
+
+- As curvas de demanda para os 3 consumidores são mostradas na figura abaixo.
+
 ```{r, echo=FALSE, fig.height=5, fig.width=10, warning=FALSE, fig.align='center', fig.retina=2}
 
-demanda_1 <- demanda %>% 
+demanda_1 <- din_df %>% 
   mutate(consumidor = "consumidor_1")
 
-demanda_2 <- demanda %>% 
-  mutate(x=x*1.33,
-         consumidor = "consumidor_2")
+demanda_2 <- d %>% 
+  mutate(q=dindividual(0.5,0.5,100,p)) %>% 
+  mutate(consumidor = "consumidor_2")
 
-demanda_3 <- demanda %>% 
-  mutate(x=x*2,
-         consumidor = "consumidor_3")
+demanda_3 <- d %>% 
+  mutate(q=dindividual(0.3,0.4,160,p)) %>% 
+  mutate(consumidor = "consumidor_3")
 
 demanda_mercado <- demanda_1 %>% 
   bind_rows(demanda_2, demanda_3)
 
 demanda_mercado %>% 
-  ggplot(aes(x,p_x, color=consumidor))+
+  ggplot(aes(q,p, color=consumidor))+
   geom_line(size=1.5)+
   facet_wrap(vars(consumidor), ncol=3)+
   theme_bw()+
-  theme(axis.text=element_text(size=20),
+  theme(axis.text=element_text(size=16),
         axis.title=element_text(size=16, face="bold"),
-        legend.position = "none")
+        legend.position = "none")+
+  labs(title="Funções de Demanda para 3 consumidores")+
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 100, 20)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8, 1)) +
+  coord_cartesian(xlim = c(0, 110), ylim = c(0, 9))
   
 
 ```
 
 ---
 
-# Construindo a demanda de mercado (2 de 2)
+# Construindo a demanda de mercado (3 de 3)
+
+A demanda de mercado será portanto a soma das demandas individuais na forma:
+
+$$Q_x=\sum q_i$$
 
 ```{r, echo=FALSE, fig.height=5, fig.width=10, warning=FALSE, message=FALSE, fig.align='center', fig.retina=2}
 
-q_mercado <- rnorm(5, mean=10000, sd=200)
-
-#q_mercado <- 10000
-
-demanda %>% 
-  mutate(x_mercado=x*q_mercado) %>% 
-  ggplot(aes(x_mercado, p_x))+
+demanda_mercado %>% 
+  group_by(p) %>% 
+  summarise(Q=sum(q)) %>% 
+  ggplot(aes(Q, p))+
   #geom_smooth(se=FALSE, size=1.2, color = "orange")+
   geom_line(size=1.5, color="orange")+
   labs(x = "passagens de ônibus", 
        y = "preço da passagem") +
-  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 800000, 100000)) +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 300, 100)) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 6, 1)) +
-  coord_cartesian(xlim = c(0, 800000), ylim = c(0, 6)) +
+  coord_cartesian(xlim = c(0, 400), ylim = c(0, 6)) +
   #geom_line(size=1.5)+
   theme_classic()+
   theme(axis.text=element_text(size=16),

@@ -1,0 +1,100 @@
+---
+title: "Estimação Empírica do Comportamento do Consumidor"
+subtitle: "Apêndice 3 - Aula 03 - Comportamento do Consumidor"
+author: "Prof. Mauricio Uriona Maldonado"
+institute: "EPS 5222"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  xaringan::moon_reader:
+    self_contained: false
+    lib_dir: libs
+    css: ["default", "rladies", "rladies-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+
+# Build the experiment
+
+
+```{r}
+library(conjoint)
+data(ice)
+experiment<-expand.grid(
+flavor=c("chocolate","vanilla","strawberry"),
+price=c("$1.50","$2.00","$2.50"),
+container=c("cone","cup"),
+topping=c("yes","no"))
+```
+
+---
+# Set the fractional factorial design
+
+```{r}
+factdesign<-caFactorialDesign(data=experiment,type="orthogonal")
+```
+
+
+---
+
+Encode the levels for factorial design:
+
+```{r}
+prof=caEncodedDesign(design=factdesign)
+```
+
+---
+
+Verification with the help of covariance and correlation matrix
+
+```{r}
+(round(cov(prof),5))
+(round(cor(prof),5))
+```
+
+
+----
+Sett the data: pref, profiles, profiles
+
+```{r}
+#the preferences of one or more respondents
+pref=ipref 
+pref
+# profiles to vote by the survey respondents
+profiles= iprof
+profiles
+#the levels of the attributes
+levelnames=ilevn
+levelnames
+```
+
+
+---
+Change the data format, from rank ordering to into importance assessments
+
+```{r}
+preferences=caRankToScore(y.rank=pref)
+```
+
+
+----
+Conjoint analysis for multiple respondents
+
+```{r}
+Conjoint(y=preferences,x=profiles,z=levelnames)
+```
+
+---
+
+class: center, middle
+
+# Fim do Apêndice
+
+Prof. Mauricio Uriona Maldonado
