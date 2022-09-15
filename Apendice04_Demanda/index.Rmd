@@ -70,19 +70,28 @@ xaringanExtra::use_share_again()
 
 # Graficando os dados
 
-- Vamos graficar os dados de venda de Morango com relação ao Preço.
+- Vamos graficar os dados de venda de Morango com relação ao Preço e em relação à renda
 
 --
 
-```{r, echo=FALSE, warning= FALSE, message = FALSE, fig.width=8, fig.height=6}
+```{r, echo=FALSE, warning= FALSE, message = FALSE, fig.width=8, fig.height=6, fig.retina=2}
 
 library(tidyverse)
-dados %>% 
+library(ggpubr)
+
+qp <- dados %>% 
   ggplot(aes(Quantidade, Preco))+
   geom_point(size=6, color="blue")+
-  theme_classic()+
-  theme(axis.text=element_text(size=20),
-        axis.title=element_text(size=16, face="bold"))
+  theme_classic()
+
+qr <- dados %>% 
+  ggplot(aes(Quantidade, Renda))+
+  geom_point(size=6, color="purple")+
+  theme_classic()
+
+ggarrange(qp, qr, 
+          ncol = 2, nrow = 1)
+
 ```
 ---
 
@@ -92,15 +101,16 @@ dados %>%
 
 --
 
-- A primeira função de Demanda `(modelo 1)` dependerá apenas do Preço, na forma: $Q=a + bP$
+- A primeira função de Demanda `(modelo 1)` dependerá apenas do Preço, na forma: $$Q=\beta_{0}+\beta_{1}P+\mu$$
 
 --
 
-- A segunda função de Demanda `(modelo 2)` dependerá tanto do Preço quanto da Renda, a forma: $Q=a + bP +cR$
+- A segunda função de Demanda `(modelo 2)` dependerá tanto do Preço quanto da Renda, a forma:  $$Q=\beta_{0}+\beta_{1}P+\beta_{2}R+\mu$$
 
 
 ```{r, echo = FALSE, message = FALSE}
 library(broom)
+
 model <- lm(Quantidade ~ Preco, data=dados)
 model2 <- lm(Quantidade ~ Preco + Renda, data=dados)
 results <- tidy(model)
@@ -119,6 +129,7 @@ library(stargazer)
 # Resultado das regressões
 
 ```{r echo=FALSE, results='asis'}
+
 stargazer(model, model2, type ="html", single.row=T)
 
 ```
@@ -127,19 +138,19 @@ stargazer(model, model2, type ="html", single.row=T)
 
 # Resultado das regressões
 
-- O modelo 1: $Q=a + bP$ é portanto: Q = `28,17` - `1,0`P
+- O modelo 1: $Q=\beta_{0}+\beta_{1}P+\mu$ é portanto: $Q = 28,17 - 1,0P$
 
 --
 
-- O modelo está de acordo com a teoria microeconômica, pois o coeficiente `b` é negativo devido a relação entre Preço e Quantidade ser inversa.
+- O modelo está de acordo com a teoria microeconômica, pois o coeficiente $\beta_{1}$ é negativo devido a relação entre Preço e Quantidade ser inversa.
 
 --
 
-- O modelo 2: $Q=a + bP +cR$ é portanto: Q=`8,07` - `0,491`P + `0,813`R
+- O modelo 2: $Q=\beta_{0}+\beta_{1}P+\beta_{2}R+\mu$ é portanto: $Q=8,07 - 0,491P + 0,813R$
 
 --
 
-- O modelo 2 também está de acordo com a teoria microecônomica, pois além do coeficiente `b` ser negativo, o coeficiente `c` é positivo. Isto é, a maior Renda, maior Quantidade será demandada.
+- O modelo 2 também está de acordo com a teoria microecônomica, pois além do coeficiente $\beta_{1}$ ser negativo, o coeficiente $\beta_{2}$ é positivo. Isto é, a maior Renda, maior Quantidade será demandada.
 
 ---
 

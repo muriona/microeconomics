@@ -31,7 +31,7 @@ class: center, middle, inverse, title-slide
 ### EPS 5222
 ]
 .date[
-### 29/04/2022
+### 15/09/2022
 ]
 
 ---
@@ -90,11 +90,11 @@ Este é um problema para a estimação empírica, por isso, uma alternativa é a
 
 # Graficando os dados
 
-- Vamos graficar os dados de venda de Morango com relação ao Preço.
+- Vamos graficar os dados de venda de Morango com relação ao Preço e em relação à renda
 
 --
 
-![](index_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-2-1.png" width="576" /&gt;
 ---
 
 # Calculando a regressão por mínimos quadrados
@@ -103,11 +103,11 @@ Este é um problema para a estimação empírica, por isso, uma alternativa é a
 
 --
 
-- A primeira função de Demanda `(modelo 1)` dependerá apenas do Preço, na forma: `\(Q=a + bP\)`
+- A primeira função de Demanda `(modelo 1)` dependerá apenas do Preço, na forma: `$$Q=\beta_{0}+\beta_{1}P+\mu$$`
 
 --
 
-- A segunda função de Demanda `(modelo 2)` dependerá tanto do Preço quanto da Renda, a forma: `\(Q=a + bP +cR\)`
+- A segunda função de Demanda `(modelo 2)` dependerá tanto do Preço quanto da Renda, a forma:  `$$Q=\beta_{0}+\beta_{1}P+\beta_{2}R+\mu$$`
 
 
 
@@ -135,19 +135,19 @@ Este é um problema para a estimação empírica, por isso, uma alternativa é a
 
 # Resultado das regressões
 
-- O modelo 1: `\(Q=a + bP\)` é portanto: Q = `28,17` - `1,0`P
+- O modelo 1: `\(Q=\beta_{0}+\beta_{1}P+\mu\)` é portanto: `\(Q = 28,17 - 1,0P\)`
 
 --
 
-- O modelo está de acordo com a teoria microeconômica, pois o coeficiente `b` é negativo devido a relação entre Preço e Quantidade ser inversa.
+- O modelo está de acordo com a teoria microeconômica, pois o coeficiente `\(\beta_{1}\)` é negativo devido a relação entre Preço e Quantidade ser inversa.
 
 --
 
-- O modelo 2: `\(Q=a + bP +cR\)` é portanto: Q=`8,07` - `0,491`P + `0,813`R
+- O modelo 2: `\(Q=\beta_{0}+\beta_{1}P+\beta_{2}R+\mu\)` é portanto: `\(Q=8,07 - 0,491P + 0,813R\)`
 
 --
 
-- O modelo 2 também está de acordo com a teoria microecônomica, pois além do coeficiente `b` ser negativo, o coeficiente `c` é positivo. Isto é, a maior Renda, maior Quantidade será demandada.
+- O modelo 2 também está de acordo com a teoria microecônomica, pois além do coeficiente `\(\beta_{1}\)` ser negativo, o coeficiente `\(\beta_{2}\)` é positivo. Isto é, a maior Renda, maior Quantidade será demandada.
 
 ---
 
