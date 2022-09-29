@@ -242,6 +242,7 @@ $$Q_{(K,L)}=AK^\alpha L^\beta$$
 ```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
 
 library(Ryacas0)
+library(plotly)
 
 x <- Sym("x")
 y <- Sym("y")
@@ -267,39 +268,31 @@ cobb_douglas <- data.frame(Q = rep(2, times=11),
 cobb_douglas <- cobb_douglas %>% 
   mutate(K=utility_K(L,Q))
 
-ggplot()+
-  
-  # Budget line
-#  stat_function(data = tibble(x = 0:80), aes(x = x),
-#                fun = budget, color = "#e32d91", size = 1.5) +
-#  annotate(geom = "label", x = 2.5, y = budget(2.5), 
-#           label = "R.O.", color = "#e32d91") +
-  # U = 10
- stat_function(data = tibble(x = 0:10), aes(x = x),
-                fun = utility_K, args = list(my_Q = 2),
-                color = "#ab62c0", size = 1.5) +
-  annotate(geom = "label", x = 5, y = utility_K(5, 2), 
-           label = "Q = 2", color = "#ab62c0") +
-  # U = 1000
-  stat_function(data = tibble(x = 0:10), aes(x = x),
-                fun = utility_K, args = list(my_Q = 4),
-                color = "#ca5670", size = 1.5) +
-  annotate(geom = "label", x = 5, y = utility_K(5, 4), 
-           label = "Q = 4", color = "#ca5670") +
-  # U = 1500
-  stat_function(data = tibble(x = 0:10), aes(x = x),
-                fun = utility_K, args = list(my_Q = 6),
-                color = "#c57c3c", size = 1.5) +
-  annotate(geom = "label", x = 5, y = utility_K(5, 6), 
-           label = "Q = 6", color = "#c57c3c") +
-  labs(x = "Trabalho (L)", 
-       y = "Capital (K)") +
-  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
-  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
-  coord_cartesian(xlim = c(0, 11), ylim = c(0, 11)) +
+rs <- tibble(x = seq(from= 0.1, to=500, by=0.1))
+
+crs <- rs %>% 
+  mutate(u100 = utility_K(x, 100),
+         u200 = utility_K(x,200),
+         u400 = utility_K(x,400),
+         u800 = utility_K(x,800)) %>% 
+  pivot_longer(2:5, values_to = "K") %>% 
+  ggplot(aes(x, K, color=name))+
+  geom_line()+
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
   theme_classic()+
-  theme(axis.text=element_text(size=20),
-        axis.title=element_text(size=16, face="bold"))
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")+
+  labs(x = "Trabalho (L)", 
+       y = "Capital (K)")
+
+ggplotly(crs)
+
+
 ```
 
 ---
@@ -312,8 +305,8 @@ ggplot()+
 library(plotly)
 library(akima)
 
-xseq <- rep(seq(1,80), time=80)
-yseq <- rep(seq(1,80), time=1, each=80)
+xseq <- rep(seq(1,200), time=80)
+yseq <- rep(seq(1,8000, by=40), time=1, each=80)
 
 data <- data.frame(xseq, yseq)
 
@@ -367,6 +360,85 @@ plot_ly() %>%
 --
 
 - Se $\alpha+\beta > 1$ então **Rendimentos Crescentes**
+---
+# Rendimentos de escala constantes
+
+```{r echo = FALSE}
+
+ggplotly(crs)
+```
+
+
+---
+# Rendimentos de escala crescentes
+
+- $\alpha$ = 0.6 e $\beta$ = 1
+
+```{r echo = FALSE}
+
+utility_Ki <- function(my_L, my_Q) {
+ (my_Q^(1/0.6))/my_L^(1/0.6)
+}
+
+
+irs <- rs %>% 
+  mutate(u100 = utility_Ki(x, 100),
+         u200 = utility_Ki(x,200),
+         u400 = utility_Ki(x,400),
+         u800 = utility_Ki(x,800)) %>% 
+  pivot_longer(2:5, values_to = "K") %>% 
+  ggplot(aes(x, K, color=name))+
+  geom_line()+
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
+  theme_classic()+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")+
+  labs(x = "Trabalho (L)", 
+       y = "Capital (K)")
+
+ggplotly(irs)
+```
+
+---
+
+# Rendimentos de escala decrescentes
+
+- $\alpha$ = 0.4 e $\beta$ = 0.1
+
+```{r echo = FALSE}
+
+utility_Kd <- function(my_L, my_Q) {
+ (my_Q^(1/0.4))/my_L^(0.1/0.4)
+}
+
+drs <- rs %>% 
+  mutate(u100 = utility_Kd(x, 100),
+         u200 = utility_Kd(x,200),
+         u400 = utility_Kd(x,400),
+         u800 = utility_Kd(x,800)) %>% 
+  pivot_longer(2:5, values_to = "K") %>% 
+  ggplot(aes(x, K, color=name))+
+  geom_line()+
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
+  theme_classic()+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16, face="bold"),
+        legend.position = "none")+
+  labs(x = "Trabalho (L)", 
+       y = "Capital (K)")
+
+ggplotly(drs)
+```
+
 ---
 
 class: center, middle

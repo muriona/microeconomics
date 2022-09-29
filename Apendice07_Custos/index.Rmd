@@ -360,6 +360,7 @@ $$Q_{(K,L)}=AK^\alpha L^\beta$$
 ```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
 
 library(Ryacas0)
+library(plotly)
 
 x <- Sym("x")
 y <- Sym("y")
@@ -379,45 +380,53 @@ utility_K <- function(my_L, my_Q) {
 #  my_Q/my_L
 #}
 
-cobb_douglas <- data.frame(Q = rep(2, times=11),
-                           L = c(0:10))
+#cobb_douglas <- data.frame(Q = rep(2, times=11),
+#                           L = c(0:100))
 
-cobb_douglas <- cobb_douglas %>% 
-  mutate(K=utility_K(L,Q))
+#cobb_douglas <- cobb_douglas %>% 
+#  mutate(K=utility_K(L,Q))
 
-ggplot()+
-  
-  # Budget line
-#  stat_function(data = tibble(x = 0:80), aes(x = x),
-#                fun = budget, color = "#e32d91", size = 1.5) +
-#  annotate(geom = "label", x = 2.5, y = budget(2.5), 
-#           label = "R.O.", color = "#e32d91") +
-  # U = 10
- stat_function(data = tibble(x = 0:10), aes(x = x),
-                fun = utility_K, args = list(my_Q = 2),
-                color = "#ab62c0", size = 1.5) +
-  annotate(geom = "label", x = 5, y = utility_K(5, 2), 
-           label = "Q = 2", color = "#ab62c0", size = 6) +
-  # U = 1000
-  stat_function(data = tibble(x = 0:10), aes(x = x),
-                fun = utility_K, args = list(my_Q = 4),
-                color = "#ca5670", size = 1.5) +
-  annotate(geom = "label", x = 5, y = utility_K(5, 4), 
-           label = "Q = 4", color = "#ca5670", size = 6) +
-  # U = 1500
-  stat_function(data = tibble(x = 0:10), aes(x = x),
-                fun = utility_K, args = list(my_Q = 6),
+prodplt <- ggplot()+
+  # U = 100
+ stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 100),
                 color = "#c57c3c", size = 1.5) +
-  annotate(geom = "label", x = 5, y = utility_K(5, 6), 
-           label = "Q = 6", color = "#c57c3c", size = 6) +
+  annotate(geom = "label", x = 50, y = utility_K(50, 100), 
+           label = "Q = 100", color = "#c57c3c", size = 6) +
+   # U = 200
+ stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 200),
+                color = "#ab62c0", size = 1.5) +
+  annotate(geom = "label", x = 50, y = utility_K(50, 200), 
+           label = "Q = 200", color = "#ab62c0", size = 6) +
+  # U = 400
+  stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 400),
+                color = "#ca5670", size = 1.5) +
+  annotate(geom = "label", x = 50, y = utility_K(50, 400), 
+           label = "Q = 400", color = "#ca5670", size = 6) +
+  # U = 800
+  stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 800),
+                color = "#c57c3c", size = 1.5) +
+  annotate(geom = "label", x = 150, y = utility_K(150, 800), 
+           label = "Q = 800", color = "#c57c3c", size = 6) +
   labs(x = "Trabalho (L)", 
        y = "Capital (K)") +
-  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
-  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 10, 1)) +
-  coord_cartesian(xlim = c(0, 11), ylim = c(0, 11)) +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
   theme_classic()+
-  theme(axis.text=element_text(size=20),
+  theme(axis.text=element_text(size=16),
         axis.title=element_text(size=16, face="bold"))
+
+prodplt
 ```
 
 
@@ -440,55 +449,55 @@ ggplot()+
 
 ---
 
-# Minimizando o custo de produção (1 de 3)
+# Minimizando o custo de produção (1 de 4)
 
 --
 
-- Vamos assumir que o custo do capital é $r$= 2 $/hora 
+- Vamos assumir que o custo do capital é $r$= 1 $/hora 
 
 --
 
-- e que o custo de mão de obra é $w$= 2 $/hora
+- e que o custo de mão de obra é $w$= 50 $/hora
 
 --
 
-- O orçamento original para a produção é $C$= 80.000 `$` (vai definir a linha de isocusto): $$K=40000-L$$
+- O orçamento original para a produção é $C$= 4.000 \$ (vai definir a linha de isocusto): $$K=4000-50L$$
 
 ---
 
-# Minimizando o custo de produção (2 de 3)
+# Minimizando o custo de produção (2 de 4)
 
 ```{r echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
 
-price_w <- 2
+price_w <- 50
 
-price_r <- 2
+price_r <- 1
 
-isocost <- 80000
+isocost <- 4000
 
 isocost_line <- function(x) (-price_w/price_r) * x + (isocost/price_r)
 
 ggplot() + 
   # Draw the line
-  stat_function(data = tibble(x = 0:50000), aes(x = x),
+  stat_function(data = tibble(x = seq(from= 0.1, to=100, by=0.1)), aes(x = x),
                 fun = isocost_line, color = "#e32d91", 
                 size = 1.5) +
   # Add a label
-  annotate(geom = "label", x = 10000, y = isocost_line(10000), 
+  annotate(geom = "label", x = 100, y = isocost_line(100), 
            label = "Linha de Isocusto", color = "#e32d91") +
   annotate(geom="text",
-           x = 40000,
-           y = 70000,
+           x = 400,
+           y = 700,
            label = glue("Eq. Isocusto: K = {(isocost/price_r)}-{(price_w/price_r)}L"),
            color = "darkblue")+
   labs(x = "Horas Trabalhadas (L)", 
        y = "Horas de Capital (K)") +
   # Make the axes go all the way to zero
-  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 50000, 10000),
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
                      labels = scales::comma) +
-  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 100000, 20000),
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
                      labels = scales::comma) +
-  coord_cartesian(xlim = c(0, 55000), ylim = c(0, 110000))+
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
   theme_classic()+
   theme(axis.text=element_text(size=14),
         axis.title=element_text(size=14, face="bold"))
@@ -496,8 +505,69 @@ ggplot() +
 ```
 
 ---
+# Minimizando o custo de produção (3 de 4)
 
-# Minimizando o custo de produção (3 de 3)
+```{r isoqisoc, echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
+
+ggplot() + 
+  # Draw the line
+  stat_function(data = tibble(x = seq(from= 0.1, to=100, by=0.1)), aes(x = x),
+                fun = isocost_line, color = "#e32d91", 
+                size = 1.5) +
+  # Add a label
+  annotate(geom = "label", x = 100, y = isocost_line(100), 
+           label = "Linha de Isocusto", color = "#e32d91") +
+  annotate(geom="text",
+           x = 400,
+           y = 700,
+           label = glue("Eq. Isocusto: K = {(isocost/price_r)}-{(price_w/price_r)}L"),
+           color = "darkblue")+
+   # U = 100
+ stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 100),
+                color = "#c57c3c", size = 1.5) +
+  annotate(geom = "label", x = 20, y = utility_K(20, 100), 
+           label = "Q = 100", color = "#c57c3c", size = 6) +
+   # U = 200
+ stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 200),
+                color = "#ab62c0", size = 1.5) +
+  annotate(geom = "label", x = 40, y = utility_K(40, 200), 
+           label = "Q = 200", color = "#ab62c0", size = 6) +
+  # U = 400
+  stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 400),
+                color = "#ca5670", size = 1.5) +
+  annotate(geom = "label", x = 80, y = utility_K(80, 400), 
+           label = "Q = 400", color = "#ca5670", size = 6) +
+   # U = 800
+  stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 800),
+                color = "#c57c3c", size = 1.5) +
+  annotate(geom = "label", x = 160, y = utility_K(160, 800), 
+           label = "Q = 800", color = "#c57c3c", size = 6) +
+  labs(x = "Horas Trabalhadas (L)", 
+       y = "Horas de Capital (K)") +
+  # Make the axes go all the way to zero
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=14, face="bold"))
+
+```
+
+
+---
+
+# Minimizando o custo de produção (4 de 4)
 
 ```{r echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
 
@@ -515,9 +585,9 @@ utility_solved <- function(my_x, my_U) {
 }
 
 
-q <- 20000
+q <- 282.84
 
-data_ci <- tibble(x=0:50000,
+data_ci <- tibble(x=seq(from= 0.1, to=500, by=0.1),
                  Q=q,
                  Isoquanta=utility_solved(x,Q),
                  Isocusto=isocost_line(x))
@@ -525,62 +595,98 @@ data_ci <- tibble(x=0:50000,
 
 
 
-data_ci2 <- data_ci %>% 
-  filter(x>=1) 
-
-isoquanta_empirical <- splinefun(x=data_ci2$x,
-                             y=data_ci2$Isoquanta)
-
-#optimal_L <- uniroot(function(x) isocost_line(x) - isoquanta_empirical(x), c(20000,25000))
-
-#optimal_K <- isoquanta_empirical(optimal_L$root)
 
 data_ci %>% 
   pivot_longer(-x:-Q) %>% 
   ggplot(aes(x,value, color=name)) +
-  geom_line(size=1.2)+
+  geom_line(size=1.5)+
   annotate(geom = "text", 
-           x = 40000, 
-           y = utility_solved(40000,q)+5000, 
+           x = 160, 
+           y = 7000, 
            label = glue("Q={q}"), 
            color = "darkblue",
            size = 6)+
   annotate(geom="text",
-           x = 40000,
-           y = 80000,
+           x = 160,
+           y = 6500,
            label = glue("Função de Produção: Q = L^0.5 * K^0.5"),
            color = "darkblue")+
   annotate(geom="text",
-           x = 40000,
-           y = 70000,
-           label = glue("L_otimo = 20000"),
+           x = 160,
+           y = 6000,
+           label = glue("L_otimo = 40"),
            color = "darkblue")+
   annotate(geom="text",
-           x = 40000,
-           y = 60000,
-           label = glue("K_otimo = 20000"),
+           x = 160,
+           y = 5500,
+           label = glue("K_otimo = 2000"),
            color = "darkblue")+
   annotate(geom="text",
-           x = 40000,
-           y = 50000,
-           label = glue("Custo Total = {round(20000*price_w+20000*price_r,0)}"),
+           x = 160,
+           y = 5000,
+           label = glue("Custo Total = {round(40*price_w+2000*price_r,0)}"),
            color = "darkblue")+
-  annotate(geom = "point", x = 20000, 
-           y = 20000, size = 4, color="darkblue")+
+  annotate(geom = "point", x = 40, 
+           y = 2000, size = 4, color="darkblue")+
   labs(x = "Horas Trabalhadas (L)", 
        y = "Horas de Capital (K)") +
   # Make the axes go all the way to zero
-  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 50000, 10000),
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
                      labels = scales::comma) +
-  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 100000, 20000),
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
                      labels = scales::comma) +
-  coord_cartesian(xlim = c(0, 55000), ylim = c(0, 110000))+
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
   theme_classic()+
   theme(axis.text=element_text(size=14),
         axis.title=element_text(size=14, face="bold"),
         legend.position = "none")
 
 ```
+
+---
+# Mas a minimização de custo é sujeita a um nível de produção pré-definido
+
+```{r echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
+
+isocost <- 6000
+
+isocost_line <- function(x) (-price_w/price_r) * x + (isocost/price_r)
+
+ggplot() + 
+  # Draw the line
+  stat_function(data = tibble(x = seq(from= 0.1, to=100, by=0.1)), aes(x = x),
+                fun = isocost_line, color = "#e32d91", 
+                size = 1.5) +
+  # Add a label
+  annotate(geom = "label", x = 100, y = isocost_line(100), 
+           label = "Linha de Isocusto", color = "#e32d91") +
+  annotate(geom="text",
+           x = 400,
+           y = 700,
+           label = glue("Eq. Isocusto: K = {(isocost/price_r)}-{(price_w/price_r)}L"),
+           color = "darkblue")+
+  labs(x = "Horas Trabalhadas (L)", 
+       y = "Horas de Capital (K)")+
+  # U = 400
+  stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 400),
+                color = "#ca5670", size = 1.5) +
+  annotate(geom = "label", x = 80, y = utility_K(80, 500), 
+           label = "Q = 500", color = "#ca5670", size = 6) +
+  # Make the axes go all the way to zero
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=14, face="bold"))
+
+```
+
+
 
 ---
 
