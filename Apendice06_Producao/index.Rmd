@@ -363,7 +363,9 @@ plot_ly() %>%
 ---
 # Rendimentos de escala constantes
 
-```{r echo = FALSE}
+- $\alpha$ = 0.5 e $\beta$ = 0.5
+
+```{r echo = FALSE, fig.height=5, fig.width=8, fig.retina=2, fig.align='center'}
 
 ggplotly(crs)
 ```
@@ -372,12 +374,12 @@ ggplotly(crs)
 ---
 # Rendimentos de escala crescentes
 
-- $\alpha$ = 0.6 e $\beta$ = 1
+- $\alpha$ = 0.6 e $\beta$ = 0.5
 
-```{r echo = FALSE}
+```{r echo = FALSE, fig.height=5, fig.width=8, fig.retina=2, fig.align='center'}
 
 utility_Ki <- function(my_L, my_Q) {
- (my_Q^(1/0.6))/my_L^(1/0.6)
+ (my_Q^(1/0.6))/my_L^(0.5/0.6)
 }
 
 
@@ -408,12 +410,12 @@ ggplotly(irs)
 
 # Rendimentos de escala decrescentes
 
-- $\alpha$ = 0.4 e $\beta$ = 0.1
+- $\alpha$ = 0.4 e $\beta$ = 0.5
 
-```{r echo = FALSE}
+```{r echo = FALSE, fig.height=5, fig.width=8, fig.retina=2, fig.align='center'}
 
 utility_Kd <- function(my_L, my_Q) {
- (my_Q^(1/0.4))/my_L^(0.1/0.4)
+ (my_Q^(1/0.4))/my_L^(0.5/0.4)
 }
 
 drs <- rs %>% 
