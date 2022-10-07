@@ -4,6 +4,7 @@
     <title>Curvas de Custo</title>
     <meta charset="utf-8" />
     <meta name="author" content="Prof. Mauricio Uriona Maldonado" />
+    <meta name="date" content="2022-06-10" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/rladies.css" rel="stylesheet" />
@@ -31,7 +32,7 @@ class: center, middle, inverse, title-slide
 ### EPS 5222
 ]
 .date[
-### 29/09/2022
+### 06/10/2022
 ]
 
 ---
@@ -210,7 +211,7 @@ class: center, middle, inverse
 
 --
 
-- Além das isoquantas, a empresa deve decidir com relação ao custo da mão de obra ($w$) e ao custo do capital ($r$)
+- Além das isoquantas, a empresa deve decidir com relação ao custo da mão de obra `\((w)\)` e ao custo do capital `\((r)\)`
 
 --
 
@@ -235,7 +236,7 @@ class: center, middle, inverse
 
 --
 
-- O orçamento original para a produção é `\(C\)`= 4.000 `$` (vai definir a linha de isocusto): `$$K=4000-50L$$`
+- O orçamento original para a produção é `\(C=4.000\)`  portanto vai definir a linha de isocusto: `$$K=4000-50L$$`
 
 ---
 
@@ -256,13 +257,97 @@ class: center, middle, inverse
 &lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
 ---
-# Mas a minimização de custo é sujeita a um nível de produção pré-definido
+
+class: center, middle, inverse
+
+# E se a empresa quiser produzir 500 unidades (e não 283)?
+
+---
+# Minimizando o custo (revisitado)
+
 
 &lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
+---
+# Minimizando o custo (revisitado)
+
+
+- Neste caso, precisamos encontrar o menor custo total que possa produzir esta quantidade desejada.
+
+--
+
+- Precisamos resolver:
+
+`$$\min wL+rK$$`
+
+$$\textrm s.a.: K^\alpha L^\beta=Q_{500} $$
+--
+
+- Podemos resolver o problema de minimização anterior utilizando os multiplicadores de Lagrange.
+
+---
+
+# Minimizando o custo (revisitado)
+
+- O resultado para `\(L\)` é:
+
+`$$L= \frac{\beta}{\alpha} \left[ \frac{r}{w}^{(\frac{\alpha}{\alpha+\beta})} \right] \left( \frac{Q_0}{A} \right)^{\frac{1}{\alpha+\beta}}$$`
+
+
+
+
+```r
+L_optimal &lt;- function(a,b,Q,A)
+```
+
+Para os dados que temos, o `\(L\)` ótimo será:
+
+
+```r
+L_star &lt;- L_optimal(0.5,0.5,500,1)
+
+L_star
+```
+
+```
+## [1] 70.71068
+```
+
+
+
+
+
+Para os dados que temos, o `\(K\)` ótimo será:
+
+
+```r
+K_star &lt;- K_optimal(0.5, 0.5, 500, 1)
+K_star
+```
+
+```
+## [1] 3535.534
+```
 
 
 ---
+# Minimizando o custo (revisitado)
+
+
+&lt;img src="index_files/figure-html/unnamed-chunk-15-1.png" width="576" style="display: block; margin: auto;" /&gt;
+
+---
+# Minimizando o custo (revisitado)
+
+&lt;img src="index_files/figure-html/unnamed-chunk-16-1.png" width="576" style="display: block; margin: auto;" /&gt;
+
+
+- Com esses dados, o Custo Total será 7071.07 Reais
+
+---
+
+
+
 
 class: center, middle
 

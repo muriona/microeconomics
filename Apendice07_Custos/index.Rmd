@@ -436,7 +436,7 @@ prodplt
 
 --
 
-- Além das isoquantas, a empresa deve decidir com relação ao custo da mão de obra ($w$) e ao custo do capital ($r$)
+- Além das isoquantas, a empresa deve decidir com relação ao custo da mão de obra $(w)$ e ao custo do capital $(r)$
 
 --
 
@@ -461,7 +461,7 @@ prodplt
 
 --
 
-- O orçamento original para a produção é $C$= 4.000 \$ (vai definir a linha de isocusto): $$K=4000-50L$$
+- O orçamento original para a produção é $C=4.000$  portanto vai definir a linha de isocusto: $$K=4000-50L$$
 
 ---
 
@@ -644,17 +644,153 @@ data_ci %>%
 ```
 
 ---
-# Mas a minimização de custo é sujeita a um nível de produção pré-definido
+
+class: center, middle, inverse
+
+# E se a empresa quiser produzir 500 unidades (e não 283)?
+
+---
+# Minimizando o custo (revisitado)
+
 
 ```{r echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
 
-isocost <- 6000
+
+ggplot() + 
+  # U = 500
+  stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 500),
+                color = "orange", size = 2.5) +
+  annotate(geom = "label", x = 80, y = utility_K(80, 500), 
+           label = "Q = 500", color = "orange", size = 10) +
+  # Make the axes go all the way to zero
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=14, face="bold"))+
+    labs(x = "Horas Trabalhadas (L)", 
+       y = "Horas de Capital (K)")
+
+```
+
+---
+# Minimizando o custo (revisitado)
+
+
+- Neste caso, precisamos encontrar o menor custo total que possa produzir esta quantidade desejada.
+
+--
+
+- Precisamos resolver:
+
+$$\min wL+rK$$
+
+$$\textrm s.a.: K^\alpha L^\beta=Q_{500} $$
+--
+
+- Podemos resolver o problema de minimização anterior utilizando os multiplicadores de Lagrange.
+
+---
+
+# Minimizando o custo (revisitado)
+
+- O resultado para $L$ é:
+
+$$L= \frac{\beta}{\alpha} \left[ \frac{r}{w}^{(\frac{\alpha}{\alpha+\beta})} \right] \left( \frac{Q_0}{A} \right)^{\frac{1}{\alpha+\beta}}$$
+
+```{r echo = FALSE}
+
+L_optimal <- function(a,b,Q,A){
+  
+  (((b/a)*(price_r/price_w))^(a/(a+b)))*(Q/A)^(1/(a+b))
+}
+
+L_star <- L_optimal(0.5,0.5,500,1)
+
+```
+
+```{r eval = FALSE}
+
+L_optimal <- function(a,b,Q,A)
+  
+```
+
+Para os dados que temos, o $L$ ótimo será:
+
+```{r}
+
+L_star <- L_optimal(0.5,0.5,500,1)
+
+L_star
+```
+
+
+```{r echo = FALSE}
+
+K_optimal <- function(a,b,Q,A){
+  
+  (((a/b)*(price_w/price_r))^(b/(a+b)))*(Q/A)^(1/(a+b))
+}
+
+
+```
+
+
+Para os dados que temos, o $K$ ótimo será:
+
+```{r}
+K_star <- K_optimal(0.5, 0.5, 500, 1)
+K_star
+```
+
+
+---
+# Minimizando o custo (revisitado)
+
+
+```{r echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
+
+
+ggplot() + 
+  # U = 500
+  stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
+                fun = utility_K, args = list(my_Q = 500),
+                color = "orange", size = 2.5) +
+  annotate(geom = "label", x = 80, y = utility_K(80, 500), 
+           label = "Q = 500", color = "orange", size = 10) +
+  # Make the axes go all the way to zero
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
+                     labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 8000, 1000),
+                     labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
+  theme_classic()+
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=14, face="bold"))+
+    labs(x = "Horas Trabalhadas (L)", 
+       y = "Horas de Capital (K)")
+
+```
+
+---
+# Minimizando o custo (revisitado)
+
+```{r echo = FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5, fig.retina=2, fig.align='center'}
+
+isocost <- (price_w*L_star)+(price_r*K_star)
 
 isocost_line <- function(x) (-price_w/price_r) * x + (isocost/price_r)
 
 ggplot() + 
   # Draw the line
-  stat_function(data = tibble(x = seq(from= 0.1, to=100, by=0.1)), aes(x = x),
+  stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
+                aes(x = x),
                 fun = isocost_line, color = "#e32d91", 
                 size = 1.5) +
   # Add a label
@@ -665,15 +801,13 @@ ggplot() +
            y = 700,
            label = glue("Eq. Isocusto: K = {(isocost/price_r)}-{(price_w/price_r)}L"),
            color = "darkblue")+
-  labs(x = "Horas Trabalhadas (L)", 
-       y = "Horas de Capital (K)")+
-  # U = 400
+  # U = 500
   stat_function(data = tibble(x = seq(from= 0.1, to=500, by=0.1)), 
                 aes(x = x),
-                fun = utility_K, args = list(my_Q = 400),
-                color = "#ca5670", size = 1.5) +
-  annotate(geom = "label", x = 80, y = utility_K(80, 500), 
-           label = "Q = 500", color = "#ca5670", size = 6) +
+                fun = utility_K, args = list(my_Q = 500),
+                color = "orange", size = 2.5) +
+  annotate(geom = "label", x = 140, y = utility_K(140, 500), 
+           label = "Q = 500", color = "orange", size = 10) +
   # Make the axes go all the way to zero
   scale_x_continuous(expand = c(0, 0), breaks = seq(0, 200, 20),
                      labels = scales::comma) +
@@ -682,13 +816,19 @@ ggplot() +
   coord_cartesian(xlim = c(0, 210), ylim = c(0, 8100))+
   theme_classic()+
   theme(axis.text=element_text(size=14),
-        axis.title=element_text(size=14, face="bold"))
+        axis.title=element_text(size=14, face="bold"))+
+    labs(x = "Horas Trabalhadas (L)", 
+       y = "Horas de Capital (K)")
 
 ```
 
 
+- Com esses dados, o Custo Total será `r round(isocost,2)` Reais
 
 ---
+
+
+
 
 class: center, middle
 
