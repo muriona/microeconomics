@@ -1,0 +1,168 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-03-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Resolvendo o problema de maximização de escolha
+
+
+```{r}
+fg <- function(x) {   ## exemplo de maximização de escolha
+    x1 <- x[1]
+    x2 <- x[2]
+   - x1 * x2
+}
+grr <- function(x) { ## Gradient of 'fr'
+    x1 <- x[1]
+    x2 <- x[2]
+    c(x2, x1)
+}
+
+
+ui = matrix(c(-1,-2),
+            nrow = 1,
+            byrow = T)
+ci = c(-80)
+theta = c(0.1, 1)
+
+all(ui %*% theta - ci > 0) # TRUE
+
+constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)
+
+pracma::fmincon(theta,
+                f=fg,
+                A=-ui,
+                b=-ci)
+```
+
+# Exemplo simplificado i=1 e j=2 sem custo de transporte
+
+```{r}
+
+D1 <- function(w) 30 - 0.07*w
+
+D2 <- function(w) 40 - 0.12*w
+
+S1 <- function(w) 10 + 0.22*w
+
+
+fg <- function(x) {   ## exemplo de maximização de escolha
+    x11 <- x[1]
+    x12 <- x[2]
+    
+  integrate(S1, lower =0, upper = (x11+x12))$value - integrate(D1, lower = 0, upper = x11)$value - integrate(D2, lower = 0, upper = x12)$value }
+    
+optim(par = c(1,1), fg)
+
+x11_otimo <- optim(par = c(1,1), fg)$par[1]
+
+x12_otimo <- optim(par = c(1,1), fg)$par[2]
+```
+
+
+```{r}
+
+q1 <- x11_otimo + x12_otimo
+
+p_d1 <- D1(x11_otimo)
+p_d2 <- D2(x12_otimo)
+p_s1 <- S1(q1)
+
+```
+
+# Exemplo simplificado i=1 e j=2 com custo de transporte constante
+
+```{r}
+
+c11 <- function(w) 3 + 0*w
+c12 <- function(w) 3.5 + 0*w
+
+fg <- function(x) {   ## exemplo de maximização de escolha
+    x11 <- x[1]
+    x12 <- x[2]
+    
+  integrate(S1, lower =0, upper = (x11+x12))$value - integrate(D1, lower = 0, upper = x11)$value - integrate(D2, lower = 0, upper = x12)$value + integrate(c11, lower = 0, upper = x11)$value + integrate(c12, lower = 0, upper=x12)$value }
+    
+optim(par = c(1,1), fg)
+
+x11_otimo <- optim(par = c(1,1), fg)$par[1]
+
+x12_otimo <- optim(par = c(1,1), fg)$par[2]
+
+```
+
+```{r}
+
+q1 <- x11_otimo + x12_otimo
+
+p_d1 <- D1(x11_otimo)
+p_d2 <- D2(x12_otimo)
+p_s1 <- S1(q1)
+
+```
+
+
+# Exemplo simplificado i=1 e j=2 com custo de transporte constante e com restrições
+
+```{r}
+
+c11 <- function(w) 3 + 0*w
+c12 <- function(w) 3.5 + 0*w
+
+fg <- function(x) {   ## exemplo de maximização de escolha
+    x11 <- x[1]
+    x12 <- x[2]
+    
+  integrate(S1, lower =0, upper = (x11+x12))$value - integrate(D1, lower = 0, upper = x11)$value - integrate(D2, lower = 0, upper = x12)$value + integrate(c11, lower = 0, upper = x11)$value + integrate(c12, lower = 0, upper=x12)$value }
+
+ui = matrix(c(1, 0, 0, 1),
+            nrow = 2,
+            byrow = T)
+ci = c(0.01,0.01)
+theta = c(1, 1)
+
+all(ui %*% theta - ci > 0) # TRUE
+
+constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)
+```
+```{r}
+x11_otimo <- constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)$par[1]
+
+x12_otimo <- constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)$par[2]
+
+
+```
+
+```{r}
+q1 <- x11_otimo + x12_otimo
+
+p_d1 <- D1(x11_otimo)
+p_d2 <- D2(x12_otimo)
+p_s1 <- S1(q1)
+```
+
