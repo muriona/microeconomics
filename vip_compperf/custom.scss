@@ -1,0 +1,96 @@
+// Set the font family and font size for the entire presentation
+/*-- scss:defaults --*/
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+}
+/*-- end:defaults --*/
+
+/*-- scss:rules --*/
+// Customize the background for the entire presentation
+.q-slide {
+  background-color: #fff;
+  background-image: url("/assets/michael-olsen-SspE9f0fAyI-unsplash.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+// Customize the background for the title slide
+.q-slide.q-title-slide {
+  background-image: url("assets/title-background.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+// Customize the heading styles
+h1 {
+  font-size: 48px;
+  font-weight: bold;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: bold;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+h3 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+h4 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+h5 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+h6 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+// Customize the list styles
+ul {
+  list-style: disc;
+  margin-left: 2em;
+}
+
+ol {
+  list-style: decimal;
+  margin-left: 2em;
+}
+
+// Customize the code block styles
+pre {
+  background-color: #f0f;
+  border: 1px solid #ddd;
+  padding: 1em;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+code {
+  font-family: "Courier New", monospace;
+}
+
+
+/*-- end:rules --*/

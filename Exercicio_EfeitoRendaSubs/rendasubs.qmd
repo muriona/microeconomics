@@ -1,0 +1,169 @@
+---
+title: "Efeito Renda e Substituição"
+author: "EPS5222"
+format: pdf
+editor: visual
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+## Ex 1.
+
+Assuma que a função de utilidade de um consumidor seja $$U=X^{0,5}Y^{0,5}$$ e que o Orçamento seja igual a R\$ $M=20$.
+
+Considere também que os preços dos bens X e Y sejam $P_X= 5$ R\$/produto e $P_Y=2$ R\$/produto.
+
+Se o preço do bem X aumentar para 10 R\$/produto, calcule os efeitos total, substituição e de renda ocorridos pela mudança do preço.
+
+### Passo 1. Maximizar a utilidade sujeito aos preços originais e ao orçamento original
+
+Resolvemos o problema de maximização:
+
+$$\max U(X,Y)$$
+
+$$\textrm s.a.: P_XX+p_XX=M $$
+
+A restrição orçamentária pode ser rescrita como: $$5X+2Y=20$$
+
+Resolvendo pelos multiplicadores de Lagrange, obtemos:
+
+```{r}
+fg <- function(x) {   ## função de utilidade
+    x1 <- x[1]
+    x2 <- x[2]
+   - x1^{0.5} * x2^{0.5}
+}
+
+
+ui = matrix(c(-5,-2), #matriz com o lado esquerdo das restrições
+            nrow = 1,
+            byrow = T)
+
+ci = c(-20) #vetor com o lado direito das restrições
+
+theta = c(0.1, 1) #valores iniciais para os bens de consumo
+
+#all(ui %*% theta - ci > 0) # Rodar este teste para verificar que o modelo de maximização foi montado corretamente
+```
+
+```{r}
+
+###### Utilizando a função constrOptim() #######
+modelo <- constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)
+
+px_ori <- modelo$par[1]
+py_ori <- modelo$par[2]
+util <- -modelo$value
+
+```
+
+X = `r round(modelo$par[1],0)`
+
+Y = `r round(modelo$par[2],0)`
+
+Utilidade = `r round(util,4)`
+
+### Passo 2. Maximizar a utilidade sujeita a nova restrição orçamentária ($P_X=10$)
+
+A nova restrição orçamentária será então:
+
+$$10X+2Y=20$$
+
+Resolvemos novamente o problema de maximização utilizando esta nova condição ($P_X=10$).
+
+O resultado agora é:
+
+```{r}
+ui = matrix(c(-10,-2), #matriz com o lado esquerdo das restrições
+            nrow = 1,
+            byrow = T)
+
+
+modelo2 <- constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)
+
+px_tot <- modelo2$par[1]
+py_tot <- modelo2$par[2]
+
+```
+
+X = `r round(px_tot,0)`
+
+Y = `r round(py_tot,0)`
+
+Isto é, o Efeito Total ($E_t$) da mudança de preço levou a uma redução do consumo do bem X (de 2 unidades a 1 unidade) e o consumo do bem Y permanece sem mudança.
+
+### Passo 3. Encontrar o Efeito Substituição
+
+Para encontrar o efeito substituição ($E_s$) devemos primeiro encontrar as derivadas parciais $\frac{\partial U}{\partial X}$ e $\frac{\partial U}{\partial Y}$ .
+
+$MU_X=\frac{\partial U}{\partial X}=0,5X^{-0,5}Y^{0,5}$
+
+$MU_Y=\frac{\partial U}{\partial Y}=0,5X^{0,5}Y^{-0,5}$
+
+Lembrando que a condição de maximização de utilidade é:
+
+$$
+\frac{MU_X}{P_X}=\frac{MU_Y}{P_Y}
+$$
+
+como o preço de X agora é $P_X=10$ resolvemos a equação:
+
+$$
+\frac{0,5X^{-0,5}Y^{0,5}}{10}=\frac{0,5X^{0,5}Y^{-0,5}}{2}
+$$
+
+O resultado: $Y=5X$
+
+Por fim, como a função de utilidade é
+
+$$U=X^{0,5}Y^{0,5}$$
+
+substituindo o valor de $U=3,1622$ e de $Y=5X$ obtemos:
+
+$$
+X=1,4
+$$
+
+$$
+Y=7
+$$
+
+Portanto, o efeito substituição pelo incremento do preço será:
+
+Consumo do bem X: $1,4 - 2 = -0,6$
+
+Consumo do bem Y: $7-5=2$
+
+### Passo 4. Encontrar o Efeito Renda
+
+Para encontrar o efeito renda ($E_r$), podemos substrair o Efeito Substituição do Efeito Total, pois:
+
+$$
+E_t = E_s+E_r
+$$
+
+Para o Bem X e Bem Y:
+
++-------------------+---------+----------+-----------+---------------+----------------+
+|                   | $P_X=5$ | $P_X=10$ | $E_t$     | $E_s$         | $E_r$          |
+|                   |         |          |           |               |                |
+|                   | $P_Y=2$ | $P_Y=2$  | (b-a)     | (c-a)         | (b-c)          |
+|                   |         |          |           |               |                |
+|                   | \(a\)   | \(b\)    |           |               |                |
++===================+=========+==========+===========+===============+================+
+| Unidades do Bem X | 2       | 1        | 1-2 = -1  | 1,4 -2 = -0,6 | 1 - 1,4 = -0,4 |
++-------------------+---------+----------+-----------+---------------+----------------+
+| Unidades do Bem Y | 5       | 5        | 5 - 5 = 0 | 7 - 5 = 2     | 5 - 7 = -2     |
++-------------------+---------+----------+-----------+---------------+----------------+

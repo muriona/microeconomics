@@ -100,7 +100,7 @@ $$y=40-0.5x$$
 ```{r, message=FALSE, echo = FALSE, fig.width=6, fig.height=6, fig.retina=2}
 
 library(tidyverse)
-
+library(fontawesome)
 
 budget <- function(x) (-0.5 * x) + 40
 
@@ -298,7 +298,7 @@ $$L=u(x,y)+\lambda[m-p_xx-p_yy]$$
 # Passo 3: Encontrar o ponto tangencial entre a curva de indiferença e a R.O. (3 de 4)
 
 
-- Nós iremos usar o $R$ para resolver o problema de maximização, igualando a equação da Reta Orçamentária à inclinação da Utilidade Marginal:
+- Nós iremos usar o `r fa("r-project")` para resolver o problema de maximização, igualando a equação da Reta Orçamentária à inclinação da Utilidade Marginal:
 
 ```{r}
 # encontrar a ótima quantidade de x

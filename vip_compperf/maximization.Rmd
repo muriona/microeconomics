@@ -12,10 +12,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
+
+indif <- function(x,y){
+  (x^0.5)+(y^0.5)+((x^0.5)*(y^0.5))
+}
+
+budget <- function(x,y){
+  (3*x)+(5*y)
+}
+
 fg <- function(x) {   ## exemplo de maximização de escolha
     x1 <- x[1]
     x2 <- x[2]
-   - x1 * x2
+   -(x1^0.5)-(x2^0.5)-((x1^05)*(x2^0.5))
 }
 grr <- function(x) { ## Gradient of 'fr'
     x1 <- x[1]
@@ -24,10 +33,10 @@ grr <- function(x) { ## Gradient of 'fr'
 }
 
 
-ui = matrix(c(-1,-2),
+ui = matrix(c(-3,-5),
             nrow = 1,
             byrow = T)
-ci = c(-80)
+ci = c(-1200)
 theta = c(0.1, 1)
 
 all(ui %*% theta - ci > 0) # TRUE
@@ -39,11 +48,47 @@ constrOptim(
   ui = ui,
   ci = ci)
 
-pracma::fmincon(theta,
-                f=fg,
-                A=-ui,
-                b=-ci)
+#pracma::fmincon(theta,
+#                f=fg,
+#                A=-ui,
+#                b=-ci)
 ```
+
+## Resolvendo o efeito renda e substituicao
+
+```{r}
+modelo <- constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)
+
+px_ori <- modelo$par[1]
+py_ori <- modelo$par[2]
+util <- -modelo$value
+
+ #novo preço
+
+ui = matrix(c(-12,-25),
+            nrow = 1,
+            byrow = T)
+
+
+modelo2 <- constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)
+
+px_tot <- modelo2$par[1]
+py_tot <- modelo2$par[2]
+
+Efeito_total <- px_tot - px_ori
+```
+
+
 
 # Exemplo simplificado i=1 e j=2 sem custo de transporte
 
@@ -128,7 +173,7 @@ fg <- function(x) {   ## exemplo de maximização de escolha
 ui = matrix(c(1, 0, 0, 1),
             nrow = 2,
             byrow = T)
-ci = c(0.01,0.01)
+ci = c(0.00,0.0)
 theta = c(1, 1)
 
 all(ui %*% theta - ci > 0) # TRUE
@@ -140,6 +185,7 @@ constrOptim(
   ui = ui,
   ci = ci)
 ```
+
 ```{r}
 x11_otimo <- constrOptim(
   theta = theta,
@@ -166,3 +212,184 @@ p_d2 <- D2(x12_otimo)
 p_s1 <- S1(q1)
 ```
 
+
+# Exemplo completo i=2 e j=3 com custo de transporte constante e com restrições
+
+```{r}
+
+D1 <- function(w) 30 - 0.07*w
+
+D2 <- function(w) 40 - 0.12*w
+
+D3 <- function(w) 35 - 0.05*w
+
+S1 <- function(w) 10 + 0.22*w
+
+S2 <- function(w) 12 + 0.15*w
+
+c11 <- function(w) 3 + 0*w
+
+c12 <- function(w) 3.5 + 0*w
+
+c13 <- function(w) 5.4 + 0*w
+
+c21 <- function(w) 6.4 + 0*w
+
+c22 <- function(w) 3.2 + 0*w
+
+c23 <- function(w) 2.9 + 0*w
+
+fg <- function(x) {   ## exemplo de maximização de escolha
+    x11 <- x[1]
+    x12 <- x[2]
+    x13 <- x[3]
+    x21 <- x[4]
+    x22 <- x[5]
+    x23 <- x[6]
+    
+  integrate(S1, lower =0, upper = (x11+x12+x13))$value + integrate(S2, lower =0, upper = (x21+x22+x23))$value  - integrate(D1, lower = 0, upper = x11+x21)$value - integrate(D2, lower = 0, upper = x12+x22)$value - integrate(D3, lower = 0, upper = x13+x23)$value + integrate(c11, lower = 0, upper = x11)$value + integrate(c12, lower = 0, upper=x12)$value + integrate(c13, lower = 0, upper=x13)$value + integrate(c21, lower = 0, upper=x21)$value + integrate(c22, lower = 0, upper=x22)$value + integrate(c23, lower = 0, upper=x23)$value }
+
+ui = matrix(c(1, 0, 0, 0, 0, 0, 
+              0, 1, 0, 0, 0, 0, 
+              0, 0, 1, 0, 0, 0, 
+              0, 0, 0, 1, 0, 0, 
+              0, 0, 0, 0, 1, 0,
+              0, 0, 0, 0, 0, 1),
+            nrow = 6,
+            byrow = T)
+ci = c(0,
+       0,
+       0,
+       0,
+       0,
+       0)
+theta = c(10, 10, 10, 10, 10, 10)
+
+all(ui %*% theta - ci > 0) # TRUE
+
+constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)
+
+res <- constrOptim(
+  theta = theta,
+  f = fg,
+  grad = NULL,
+  ui = ui,
+  ci = ci)
+```
+
+```{r}
+x11_otimo <- res$par[1]
+
+x12_otimo <- res$par[2]
+
+x13_otimo <- res$par[3]
+
+x21_otimo <- res$par[4]
+
+x22_otimo <- res$par[5]
+
+x23_otimo <- res$par[6]
+
+
+```
+
+
+```{r}
+
+q1 <- x11_otimo + x12_otimo + x13_otimo
+q2 <- x21_otimo + x22_otimo + x23_otimo
+d1 <- x11_otimo + x21_otimo
+d2 <- x12_otimo + x22_otimo
+d3 <- x13_otimo + x23_otimo
+
+p_d1 <- D1(d1)
+p_d2 <- D2(d2)
+p_d3 <- D2(d3)
+p_s1 <- S1(q1)
+p_s2 <- S1(q2)
+```
+
+
+## Inequações Variacionais
+
+### Exemplo para mercado em concorrência perfeita
+
+```{r}
+library(glue)
+library(tidyverse)
+
+vip_func <- function(x11,x12,x13,x21,x22,x23, alpha){
+	
+d1 <- x11 + x21
+d2 <- x12 + x22
+d3 <- x13 + x23
+q1 <- x11 + x12 + x13
+q2 <- x21 + x22 + x23
+	
+X <- c(x11, x12, x13,
+	  x21, x22, x23)
+
+	
+Fx <- c(f11(d1,q1), 
+        f12(d2,q1), 
+        f13(d3,q1), 
+        f21(d1,q2), 
+        f22(d2,q2), 
+        f23(d3,q2))
+	
+vip <- data.frame(X=X, Fx=Fx)
+
+vip <- vip %>%
+	 mutate(
+		 Y=X-(alpha*Fx),
+         PY = ifelse(Y<=0, 0, Y),
+         Erro = (X-PY)^2)
+
+X_vip <- vip$PY
+erro <- sum(vip$Erro)
+rmse <- sqrt(erro/length(X_vip))	
+	return(c(X_vip, rmse))
+	
+}
+
+```
+
+inicializamos com um valor do vetor de soluções X
+
+```{r}
+
+X <- c(10,10,10,
+	  10,10,10)
+
+```
+
+Com esse vetor rodamos a primeira iteração
+
+```{r}
+X_vip <- vip_func(as.numeric(X[1]), as.numeric(X[2]),as.numeric(X[3]),
+				 as.numeric(X[4]),as.numeric(X[5]),as.numeric(X[6]), 0.5)
+
+X_vip
+```
+
+agora rodamos um loop até que a raiz do erro quadrático médio (rmse) seja <= 0.0001. Estamos usando um alfa = 0.5
+
+```{r}
+while(as.numeric(X_vip[7]) > 0.00001) {
+	X_vip <- vip_func(as.numeric(X_vip[1]), as.numeric(X_vip[2]),as.numeric(X_vip[3]),
+				 as.numeric(X_vip[4]),as.numeric(X_vip[5]),as.numeric(X_vip[6]), 0.5)
+}
+
+X_vip
+```
+
+### Exemplo para mercado em monopólio
+
+
+
+### Exemplo para mercado em oligopólio

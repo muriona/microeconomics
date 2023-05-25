@@ -1,0 +1,26 @@
+##"I played some days with making an interface between our ConceptBase system (essentially a database system to store models) and graphviz. One example graph is attached. It is a so-called petri net for Dutch traffic lights. The example is actually taken from a book by Wil van der Aalst." Contributed by Manfred Jeusfeld.
+
+##Command to produce the output: "neato -Tpng thisfile > thisfile.png"
+
+digraph TrafficLights {
+fontname="Helvetica,Arial,sans-serif"
+node [fontname="Helvetica,Arial,sans-serif"]
+edge [fontname="Helvetica,Arial,sans-serif"]
+layout = neato
+
+node [shape=circle,fixedsize=true,width=0.9];  s1; i; m; d1; j; n;
+s1->d1;
+s1->j;
+s1->n;
+i->d1;
+i->j;
+i->n;
+m->d1;
+m->j;
+m->n;
+
+
+overlap=false
+label="PetriNet Model TrafficLights\nExtracted from ConceptBase and layed out by Graphviz"
+fontsize=12;
+}
