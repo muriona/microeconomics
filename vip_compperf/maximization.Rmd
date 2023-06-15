@@ -13,18 +13,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 
-indif <- function(x,y){
-  (x^0.5)+(y^0.5)+((x^0.5)*(y^0.5))
-}
-
-budget <- function(x,y){
-  (3*x)+(5*y)
-}
 
 fg <- function(x) {   ## exemplo de maximização de escolha
-    x1 <- x[1]
-    x2 <- x[2]
-   -(x1^0.5)-(x2^0.5)-((x1^05)*(x2^0.5))
+    x1 <- x[1]^0.5
+    x2 <- x[2]^0.5
+   #-(x1^0.5)-(x2^0.5)-((x1^0.5)*(x2^0.5))
+    -(x1+x2)-(x1*x2)
 }
 grr <- function(x) { ## Gradient of 'fr'
     x1 <- x[1]
@@ -37,9 +31,9 @@ ui = matrix(c(-3,-5),
             nrow = 1,
             byrow = T)
 ci = c(-1200)
-theta = c(0.1, 1)
+theta = c(0, 1)
 
-all(ui %*% theta - ci > 0) # TRUE
+#all(ui %*% theta - ci > 0) # TRUE
 
 constrOptim(
   theta = theta,
@@ -88,6 +82,92 @@ py_tot <- modelo2$par[2]
 Efeito_total <- px_tot - px_ori
 ```
 
+
+
+
+## Resolvendo o problema de minimização de custos
+
+```{r}
+
+r=8
+w=2
+
+
+# Objective Function
+eval_f <- function(x){
+    x1 <- x[1]
+    x2 <- x[2]
+return (-(x1^0.5)-(x2^0.5)-((x1^05)*(x2^0.5)))
+}
+
+# Inequality constraints
+eval_g_ineq <- function(x)
+{   x1 <- x[1]
+    x2 <- x[2]
+return (((3*x1)+(5*x2))-1200)
+}
+# Equality constraints
+eval_g_eq <- function(x)
+{   x1 <- x[1]
+    x2 <- x[2]
+return (1200+((3*x1)+(5*x2)))
+}
+# Lower and upper bounds
+#lb <- c(0,0)
+#ub <- c(55,55)
+#initial values
+x0 <- c(5,25)
+
+# Set optimization options.
+local_opts <- list( "algorithm" = "NLOPT_LD_MMA", "xtol_rel" = 1.0e-15 )
+
+opts <- list( "algorithm"= "NLOPT_GN_ISRES",
+"xtol_rel"= 1.0e-25,
+#"maxeval"= 160000,
+#"local_opts" = local_opts,
+"print_level" = 0 )
+
+
+
+
+```
+
+```{r}
+library(nloptr)
+
+res <- nloptr ( x0 = x0,
+                eval_f = eval_f,
+                lb = c(0, 0),
+                ub = c(10000, 10000),
+                #eval_g_ineq = eval_g_ineq,
+                eval_g_eq = eval_g_eq,
+                #opts = opts
+)
+print(res)
+```
+```{r}
+Y <- 100
+a <- 0.4
+b <- 0.4
+
+K_func <- function(Y,a,b){
+  (Y^(1/(a+b)))*(w*b/(r*a))^(a/(a+b))
+}
+
+K_ot <- K_func(100,0.4,0.4)
+
+L_func <- function(a,b){
+  ((r*a)/(w*b))*K_func(100,0.4,0.4)
+}
+  
+L_ot <- L_func(a,b) 
+
+(K_func(100,0.4,0.4)^0.4)*(L_func(a,b)^0.4)
+
+(25^0.4)*(6.25^0.4)
+
+(r*K_ot)+(w*L_ot)
+```
 
 
 # Exemplo simplificado i=1 e j=2 sem custo de transporte

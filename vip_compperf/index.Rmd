@@ -392,10 +392,10 @@ background-size: contain
 
 $$\max \,z(w)=\sum_{j=1}^{n}\int_{0}^{d_j} D_j(w) \,dw - \sum_{i=1}^{m}\int_{0}^{q_i} S_i(w) \,dw - \sum_{i=1}^{m}\sum_{j=1}^{n}\int_{0}^{x_{ij}} C_{ij}(w) \,dw\\$$
 
-$$\textrm{s.a.} \sum_{j=1}^{n}x{ij}=q_i \ \ \ \ \ \  \forall i=1,...m$$
+$$\textrm{s.a.} \sum_{j=1}^{n}x_{ij}=q_i \ \ \ \ \ \  \forall i=1,...m$$
 
-$$\sum_{i=1}^{m}x{ij}=d_j \ \ \ \ \ \  \forall j=1,...n$$
-$$x{ij}\geq0 \ \ \ \ \ \  \forall i,j$$
+$$\sum_{i=1}^{m}x_{ij}=d_j \ \ \ \ \ \  \forall j=1,...n$$
+$$x_{ij}\geq0 \ \ \ \ \ \  \forall i,j$$
 
 ---
 # Excedentes no mercado em rede
@@ -408,10 +408,10 @@ $$\rho_i+c_{ij}=\pi_j$$ então $$x_{ij} \geq 0$$
 
 - Já, o excedente do produtor será:
 
-$$EP_i=S_i(q_i^*)-\int_{0}^{q_i}S_i(w)\,dw$$
+$$EP_i=q_i^*S_i(q_i^*)-\int_{0}^{q_i}S_i(w)\,dw$$
 - O excedente do consumidor será:
 
-$$EC_j=\int_{0}^{d_j}D_j(w)\,dw-D_j(d_j^*)$$
+$$EC_j=\int_{0}^{d_j}D_j(w)\,dw-d_j^*D_j(d_j^*)$$
 ]
 
 .pull-right[
@@ -1015,6 +1015,59 @@ x %>%
 E o valor do RMSE = `r format(X_vip[7], scientific = FALSE)`
 
 ]
+
+---
+# Excedentes
+
+.pull-left[
+
+Excedentes do Produtor:
+
+$$EP_i= q_i^*S_i(q_i^*)-\int_{0}^{q_i} S_i(w) \,dw$$
+
+```{r echo=TRUE}
+
+q1 <- x11_otimo+x12_otimo+x13_otimo
+q2 <- x21_otimo+x22_otimo+x23_otimo
+
+
+EP1 <- q1*S1(q1) - integrate(S1, lower =0, upper = q1)$value 
+EP2 <- q2*S2(q2) - integrate(S2, lower =0, upper = q2)$value
+
+EP <- EP1 + EP2
+
+
+```
+
+EP = `r round(EP,2)` Milhoes USD
+
+]
+
+.pull-right[
+
+Excedentes do Consumidor:
+
+$$EC_j=\int_{0}^{d_j}D_j(w)\,dw-d_j^*D_j(d_j^*)$$
+
+```{r echo = TRUE}
+
+d1 <- x11_otimo+x21_otimo
+d2 <- x12_otimo+x22_otimo
+d3 <- x13_otimo+x23_otimo
+
+EC1 <- integrate(D1, lower =0, upper = d1)$value - d1*D1(d1) 
+EC2 <- integrate(D2, lower =0, upper = d2)$value - d2*D2(d2) 
+EC3 <- integrate(D3, lower =0, upper = d3)$value - d3*D3(d3) 
+
+EC <- EC1 + EC2 + EC3
+
+```
+
+EC = `r round(EC,2)` Mi USD
+
+Excedente do Mercado = `r round(EP+EC,2)` Mi USD
+]
+
 
 ---
 class: center, middle
