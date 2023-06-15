@@ -59,11 +59,6 @@ library(DT)
 
 # Mercado Monopolista em Rede
 
-.pull-left[
-- Quando um mercado monopolista opera em rede, a função que o monopolista desejará maximizar não será mais a do excedente da sociedade e sim o próprio Lucro:
-]
-
-.pull-right[
 
 $$\max \,z(w)=\sum_{j=1}^{n}d_j\ D_j(d_j)  - \sum_{i=1}^{m}\int_{0}^{q_i} S_i(w) \,dw - \sum_{i=1}^{m}\sum_{j=1}^{n}\int_{0}^{x_{ij}} C_{ij}(w) \,dw\\$$
 
@@ -72,8 +67,8 @@ $$\textrm{s.a.} \sum_{j=1}^{n}x{ij}=q_i \ \ \ \ \ \  \forall i=1,...m$$
 $$\sum_{i=1}^{m}x{ij}=d_j \ \ \ \ \ \  \forall j=1,...n$$
 $$x{ij}\geq0 \ \ \ \ \ \  \forall i,j$$
 
+- Quando um mercado monopolista opera em rede, a função que o monopolista desejará maximizar não será mais a do excedente da sociedade e sim o próprio Lucro:
 
-]
 
 
 
@@ -123,10 +118,10 @@ $$\rho_i+c_{ij}=\pi_j$$ então $$x_{ij} \geq 0$$
 
 - Já, o excedente do produtor será:
 
-$$EP_i=S_i(q_i^*)-\int_{0}^{q_i}S_i(w)\,dw$$
+$$EP_i=q_i^*S_i(q_i^*)-\int_{0}^{q_i}S_i(w)\,dw$$
 - O excedente do consumidor será:
 
-$$EC_j=\int_{0}^{d_j}D_j(w)\,dw-D_j(d_j^*)$$
+$$EC_j=\int_{0}^{d_j}D_j(w)\,dw-d_j^*D_j(d_j^*)$$
 ]
 
 .pull-right[
@@ -136,7 +131,7 @@ $$EC_j=\int_{0}^{d_j}D_j(w)\,dw-D_j(d_j^*)$$
 $$EM_{ij}=x_{ij} \left[ D_j(d_j^*)-S_i(q_i^*) \right]$$ $$-\int_{0}^{x_{ij}}C_{ij}(w)\,dw$$
 
 ]
-]
+
 
 ---
 # Mercado de Refino de Petróleo
@@ -244,71 +239,20 @@ Com base nas notas de aula do Prof. Sérgio F. Mayerle
 ---
 # Formulação VIP para a monopólio
 
-.pull-left[
 
 - O vetor $x^* = c(x_{11}^*,...x_{ij}^*,...,x_{mn}^*)$ [e uma solução para o problema de equilíbrio no mercado monopolista se satisfaz o seguinte problema de inequações variacionais:
 
-]
+```{r fig.align = "center", echo = FALSE}
 
-.pull-right[
-
-```{latex}
-
-\left\langle
-\begin{bmatrix}
--D_1(d_1) - d_1\ \frac{\partial D_1(d_1)}{\partial d_1} + S_1(q_1)+C{11} \\
-. \\
-.\\
-.\\
--D_j(d_j) - d_j\ \frac{\partial D_j(d_j)}{\partial d_j} + S_i(q_i)+C{ij}\\
-.\\
-.\\
-.\\
--D_1(d_n) - d_n\ \frac{\partial D_n(d_n)}{\partial d_n} + S_m(q_m)+C{mn}
-\end{bmatrix}
-,
-\begin{bmatrix}
-x_{11}^*\\
-.\\
-.\\
-.\\
-x_{ij}\\
-.\\
-.\\
-.\\
-x_{mn}
-\end{bmatrix}
--
-\begin{bmatrix}
-x_{11}\\
-.\\
-.\\
-.\\
-x_{ij}^*\\
-.\\
-.\\
-.\\
-x_{mn}^*
-\end{bmatrix}
-
-\right\rangle
-
-\ge 0
-
+knitr::include_graphics("vip_mono.png")
 ```
-
-
-]
 
 ---
 ## Definido a função F(x)
 
-- A função $F(x)$ será igual a 
+- A função $F(x) = - \nabla\ z(x)$ será igual a 
 
 $$ 
-
-F(x) = - \nabla\ z(x) = 
-
 \begin{bmatrix}
 -D_1(d_1) - d_1\ \frac{\partial D_1(d_1)}{\partial d_1} + S_1(q_1)+C_{11} \\
 . \\
@@ -320,8 +264,8 @@ F(x) = - \nabla\ z(x) =
 .\\
 -D_1(d_n) - d_n\ \frac{\partial D_n(d_n)}{\partial d_n} + S_m(q_m)+C_{mn}
 \end{bmatrix}
-
 $$
+- O termo adicional $\frac{\partial D_j(d_j)}{\partial d_j}$ representa o trade-off da Receita Marginal do Monopolista.
 
 ---
 ## Definir as funções de demanda, oferta e custos de transporte
@@ -372,7 +316,7 @@ c23 <- function(w) 2.9 + 0*w
 
 
 
-- Seguindo a notação da gradiente $- \nabla\ z(ij) = $ $-D_j(d_j) - d_j\ \frac{\partial D_j(d_j)}{\partial d_j} + S_i(q_i)+C{ij}$ precisamos definir o termo $d_j\ \frac{\partial D_j(d_j)}{\partial d_j}$:
+- Seguindo a notação da gradiente $-\nabla\ z(ij)$ precisamos definir o termo $d_j\ \frac{\partial D_j(d_j)}{\partial d_j}$:
 
 ```{r echo = TRUE}
 library(Deriv)
@@ -658,6 +602,61 @@ E o valor do RMSE = `r format(X_vip[7], scientific = FALSE)`
 
 ]
 
+---
+
+Vamos salvar os valores individualmente:
+
+```{r echo=TRUE}
+x11_otimo <- X_vip[1]
+x12_otimo <- X_vip[2]
+x13_otimo <- X_vip[3]
+x21_otimo <- X_vip[4]
+x22_otimo <- X_vip[5]
+x23_otimo <- X_vip[6]
+```
+
+
+---
+# Excedentes
+
+.pull-left[
+
+Excedentes do Produtor Monopolista:
+
+```{r}
+
+q1 <- x11_otimo+x12_otimo+x13_otimo
+q2 <- x21_otimo+x22_otimo+x23_otimo
+
+
+```
+
+EP = xxx Milhoes USD
+
+]
+
+.pull-right[
+
+Excedentes do Consumidor:
+
+```{r echo = TRUE}
+
+d1 <- x11_otimo+x21_otimo
+d2 <- x12_otimo+x22_otimo
+d3 <- x13_otimo+x23_otimo
+
+EC1 <- integrate(D1, lower =0, upper = d1)$value - d1*D1(d1) 
+EC2 <- integrate(D2, lower =0, upper = d2)$value - d2*D2(d2) 
+EC3 <- integrate(D3, lower =0, upper = d3)$value - d3*D3(d3) 
+
+EC <- EC1 + EC2 + EC3
+
+```
+
+EC = `r round(EC,2)` Mi USD
+
+Excedente do Mercado = xxx Mi USD
+]
 ---
 class: center, middle
 

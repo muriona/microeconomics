@@ -1017,6 +1017,19 @@ E o valor do RMSE = `r format(X_vip[7], scientific = FALSE)`
 ]
 
 ---
+
+Vamos salvar os valores individualmente:
+
+```{r echo=TRUE}
+x11_otimo <- X_vip[1]
+x12_otimo <- X_vip[2]
+x13_otimo <- X_vip[3]
+x21_otimo <- X_vip[4]
+x22_otimo <- X_vip[5]
+x23_otimo <- X_vip[6]
+```
+
+---
 # Excedentes
 
 .pull-left[

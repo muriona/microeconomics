@@ -1725,6 +1725,20 @@ E o valor do RMSE = 0.000009958302
 ]
 
 ---
+
+Vamos salvar os valores individualmente:
+
+
+```r
+x11_otimo &lt;- X_vip[1]
+x12_otimo &lt;- X_vip[2]
+x13_otimo &lt;- X_vip[3]
+x21_otimo &lt;- X_vip[4]
+x22_otimo &lt;- X_vip[5]
+x23_otimo &lt;- X_vip[6]
+```
+
+---
 # Excedentes
 
 .pull-left[
@@ -1745,7 +1759,7 @@ EP2 &lt;- q2*S2(q2) - integrate(S2, lower =0, upper = q2)$value
 EP &lt;- EP1 + EP2
 ```
 
-EP = 1420.12 Milhoes USD
+EP = 1423.48 Milhoes USD
 
 ]
 
@@ -1768,9 +1782,9 @@ EC3 &lt;- integrate(D3, lower =0, upper = d3)$value - d3*D3(d3)
 EC &lt;- EC1 + EC2 + EC3
 ```
 
-EC = 614.5 Mi USD
+EC = 619.92 Mi USD
 
-Excedente do Mercado = 2034.62 Mi USD
+Excedente do Mercado = 2043.4 Mi USD
 ]
 
 
