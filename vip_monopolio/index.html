@@ -969,7 +969,7 @@ class: center, middle, inverse, title-slide
 ### EPS 5222
 ]
 .date[
-### 15/06/2023
+### 20/06/2023
 ]
 
 ---
@@ -1044,9 +1044,9 @@ background-size: contain
 
 .pull-left[
 
-- Já, o excedente do produtor será:
+- O excedente do produtor será a função `\(z(w)\)` propriamente, pois o monopolista está interessado em apenas maximizar o seu Lucro.
 
-`$$EP_i=q_i^*S_i(q_i^*)-\int_{0}^{q_i}S_i(w)\,dw$$`
+
 - O excedente do consumidor será:
 
 `$$EC_j=\int_{0}^{d_j}D_j(w)\,dw-d_j^*D_j(d_j^*)$$`
@@ -1056,7 +1056,7 @@ background-size: contain
 
 - Portanto:
 
-`$$EM_{ij}=x_{ij} \left[ D_j(d_j^*)-S_i(q_i^*) \right]$$` `$$-\int_{0}^{x_{ij}}C_{ij}(w)\,dw$$`
+`$$EM=z(w)+\sum_{j=1}^{n} EC_j$$`
 
 ]
 
@@ -1314,6 +1314,8 @@ f23 &lt;- function(d,q){
 
 
 ```r
+library(tidyverse)
+
 vip_func &lt;- function(x11,x12,x13,
                      x21,x22,x23, 
                      alpha){
@@ -1503,8 +1505,22 @@ x23_otimo &lt;- X_vip[6]
 Excedentes do Produtor Monopolista:
 
 
+```r
+q1 &lt;- x11_otimo+x12_otimo+x13_otimo
+q2 &lt;- x21_otimo+x22_otimo+x23_otimo
+d1 &lt;- x11_otimo+x21_otimo
+d2 &lt;- x12_otimo+x22_otimo
+d3 &lt;- x13_otimo+x23_otimo
 
-EP = xxx Milhoes USD
+djDj &lt;- d1*D1(d1)+d2*D2(d2)+d3*D3(d3)
+Si &lt;- integrate(S1, lower = 0, upper = q1)$value + integrate(S2, lower = 0, upper = q2)$value
+cij &lt;- x11_otimo*c11(x11_otimo)+x12_otimo*c12(x12_otimo)+x13_otimo*c13(x13_otimo)+
+       x21_otimo*c21(x21_otimo)+x22_otimo*c22(x22_otimo)+x23_otimo*c23(x23_otimo)
+
+EP &lt;- djDj - Si - cij
+```
+
+EP = 1611.09 Milhões USD
 
 ]
 
@@ -1514,10 +1530,6 @@ Excedentes do Consumidor:
 
 
 ```r
-d1 &lt;- x11_otimo+x21_otimo
-d2 &lt;- x12_otimo+x22_otimo
-d3 &lt;- x13_otimo+x23_otimo
-
 EC1 &lt;- integrate(D1, lower =0, upper = d1)$value - d1*D1(d1) 
 EC2 &lt;- integrate(D2, lower =0, upper = d2)$value - d2*D2(d2) 
 EC3 &lt;- integrate(D3, lower =0, upper = d3)$value - d3*D3(d3) 
@@ -1527,7 +1539,7 @@ EC &lt;- EC1 + EC2 + EC3
 
 EC = 317.42 Mi USD
 
-Excedente do Mercado = xxx Mi USD
+Excedente do Mercado = 1928.51 Mi USD
 ]
 ---
 class: center, middle
@@ -1640,9 +1652,9 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
 })(document);</script>
 <script>(function(data, token) {
   // data is an object of the form { path: base64 data }; we need to move base64
-  // data back to HTML nodes (e.g., into the 'src' attribute of <img>)
+  // data back to HTML nodes (e.g., into the 'src' attribute of <img>, <audio>, <video>, <source>)
   var i, s, d, el, els;
-  els = document.querySelectorAll('img[src^="' + token + '"], source[src^="' + token + '"]');
+  els = document.querySelectorAll(['img', 'audio', 'video', 'source'].map(x => x + '[src^="' + token + '"]').join(','));
   for (i = 0; i < els.length; i++) {
     el = els[i]; s = el.src.replace(token, ''); d = data[s];
     if (d) el.src = d;
