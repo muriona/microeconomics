@@ -414,7 +414,4 @@ lm_fit_vc %>%
 ## Comparação
 
 -   Para treinar modelos de regressão elastic net utilizamos `linear_reg(penalty=0.1, mixture=0.5)` e `set_engine("glmnet")`
-
-<!-- -->
-
 -   E varios outros [aqui](https://parsnip.tidymodels.org/reference/)
