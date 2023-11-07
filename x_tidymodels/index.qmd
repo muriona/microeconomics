@@ -196,7 +196,7 @@ treino_prep %>% head(5)
 
 -   assim também, precisaremos preparar os dados de teste, no dataset `teste_prep`
 
-## Outras transformações: `step_log`
+## Outras transformações: `step_corr`
 
 -   Existem muitas outras transformações com uso de `step_` que podem ser de utilidade dependendo do contexto dos dados.
 
