@@ -1,0 +1,420 @@
+---
+title: "Machine Learning em R"
+subtitle: "Modelos de Regressão"
+author: "Prof. Mauricio Uriona Maldonado"
+format:
+  revealjs:
+    theme: theme.scss
+    transition: fade
+    background-transition: fade
+    highlight-style: ayu-mirage
+    incremental: true
+code-link: true
+execute:
+  echo: true
+  freeze: auto
+editor: visual
+---
+
+# Resampling
+
+## Resampling e baixar dados
+
+-   Você pode baixar os dados do IMDB [aqui](https://github.com/curso-r/livro-material/raw/master/assets/data/imdb.rds).
+
+-   Vamos iniciar carregando os pacotes necessários:
+
+```{r}
+#| echo: true
+
+library(tidyverse)
+library(tidymodels)
+
+imdb <- read_rds("https://github.com/curso-r/livro-material/raw/master/assets/data/imdb.rds")
+
+
+```
+
+## Resampling
+
+```{r}
+str(imdb)
+```
+
+## Resampling
+
+-   Agora sim podemos criar os datasets de treino e teste:
+
+```{r}
+#| echo: true
+
+set.seed(2024)
+
+imdb_split <- initial_split(imdb,
+                            prop = 0.75,
+                            strata = nota_imdb)
+
+```
+
+Escolhemos `strata=nota_imdb` porque queremos que `nota_imdb` seja nossa variável de saída, ou seja, queremos prever a nota de um determinado filme, com base em certos atributos (iremos escolher o atributos na etapa seguinte).
+
+## Resampling
+
+Agora que criamos um objeto `split` , podemos usá-lo para separar nossos dados em treino e teste, utilizando as funções a seguir:
+
+```{r}
+#| echo: true
+
+treino <- training(imdb_split)
+teste <- testing(imdb_split)
+
+```
+
+Podemos verificar que os dados foram divididos conforme solicitado:
+
+```{r}
+#| echo: true
+
+nrow(treino)/nrow(imdb)
+nrow(teste)/nrow(imdb)
+
+```
+
+# Model Fitting
+
+## O pacote `parsnip`
+
+::: columns
+::: {.column width="45%"}
+Vamos construir um modelo simples de regressão linear, onde a `nota_imdb` depende de:
+
+-   `num_avaliacoes`,
+-   `num_criticas_publico` e
+-   `num_criticas_critica`.
+:::
+
+::: {.column width="55%"}
+-   O código é:
+
+```{r}
+lm_model <- linear_reg() %>% 
+  set_engine("lm") %>% 
+  set_mode("regression")
+
+```
+
+-   Para treinar o modelo, usaremos `fit`:
+
+```{r}
+
+lm_fit <- lm_model %>% 
+  fit(nota_imdb ~ num_avaliacoes + 
+        num_criticas_publico +
+        num_criticas_critica,
+      data=treino)
+```
+:::
+:::
+
+## Resultados do modelo
+
+O modelo treinado `lm_fit` pode ser observado mais de perto utilizando `tidy`:
+
+```{r}
+tidy(lm_fit)
+```
+
+## Avaliando a performance do modelo
+
+Para avaliar a performance do modelo, usamos `last_fit` no objeto `lm_model` e calculamos os indicadores de performance utilizando `collect_metrics`:
+
+```{r}
+formula <- nota_imdb ~ num_avaliacoes + 
+        num_criticas_publico +
+        num_criticas_critica
+
+lm_last <- lm_model %>% 
+  last_fit(formula, 
+           split = imdb_split)
+
+lm_last %>% 
+  collect_metrics()
+```
+
+# Feature Engineering
+
+## Utilizando o pacote `recipes`
+
+-   Vamos aplicar algumas transformações utilizando `step`
+
+-   Primeiro, vamos aplicar `step_log` para `num_avaliacoes`
+
+```{r}
+#| eval: false
+
+lm_model_rec <- recipe(formula,
+                       data=treino) %>% 
+  step_log(num_avaliacoes, base = 10)
+
+```
+
+-   agora, vamos imputar valores para `num_criticas_publico` e `num_criticas_critica`:
+
+```{r}
+
+lm_model_rec <- recipe(formula,
+                       data=treino) %>% 
+  step_log(num_avaliacoes, base = 10) %>% 
+  step_impute_knn(all_predictors())
+```
+
+## Treinando o objeto `recipe`
+
+-   Para treinar o objeto `lm_model_rec` vamos utilizar `prep()`
+
+```{r}
+lm_model_rec_prep <- lm_model_rec %>% 
+  prep(training = treino)
+```
+
+-   e finalmente vamos produzir o novo dataset de treino com as transformações que fizemos.
+
+-   vamos utilizar `new_data=NULL` para produzir o dataset de treino
+
+```{r}
+treino_prep <- lm_model_rec_prep %>% 
+  bake(new_data = NULL)
+```
+
+## Preparando os dados
+
+Os dados de treino pré-processados encontram-se no dataset `treino_prep`
+
+```{r}
+treino_prep %>% head(5)
+```
+
+-   assim também, precisaremos preparar os dados de teste, no dataset `teste_prep`
+
+## Outras transformações: `step_log`
+
+-   Existem muitas outras transformações com uso de `step_` que podem ser de utilidade dependendo do contexto dos dados.
+
+-   Quando duas variáveis estão muito correlacionadas, p.ex., o modelo de ML pode sofrer de multicolinearidade, utiliza-se:
+
+```{r}
+lm_model_rec <- recipe(formula,
+                       data=treino) %>%
+  step_log(num_avaliacoes, base = 10) %>% 
+  step_impute_knn(all_predictors()) %>% 
+  step_corr(all_numeric(), threshold = 0.85)
+```
+
+-   Aqui foi escolhido um `threshold = 0.85` mas poderia ter sido escolhido outro valor, p.ex. `0.9`
+
+## Outras transformações: `step_normalize`
+
+-   Também é possível normalizar colunas (processo similar ao utilizado no `kmeans`
+
+-   Para isso, cada valor da coluna e subtraido pela média e dividido pelo desvio padrão.
+
+-   É recomendado em todas as variáveis numéricas, utilizando `step_normalize(all_numeric)`
+
+```{r}
+lm_model_rec <- recipe(formula,
+                       data=treino) %>%
+  step_log(num_avaliacoes, base = 10) %>% 
+  step_impute_knn(all_predictors()) %>% 
+  step_corr(all_numeric(), threshold = 0.85) %>% 
+  step_normalize(all_numeric(), -all_outcomes())
+```
+
+## Outras transformações: `step_dummy`
+
+-   Com relação a variáveis do tipo `factor` é recomendável convertê-las a `dummies`.
+-   Para selecionar todas as colunas categóricas automaticamente, utilizamos `all_nominal()` como argumento do `step_dummy`
+
+```{r}
+lm_model_rec <- recipe(formula,
+                       data=treino) %>%
+  step_log(num_avaliacoes, base = 10) %>% 
+  step_impute_knn(all_predictors()) %>% 
+  step_corr(all_numeric(), threshold = 0.85) %>% 
+  step_normalize(all_numeric(), -all_outcomes()) %>% 
+  step_dummy(all_nominal())
+```
+
+## Preparando os novos datasets
+
+-   Uma vez que todas as etapas de pré-processamento foram definidas, deve-se criar novos datasets de treino e teste.
+
+-   Utiliza-se a função `prep()` para preparar a recipe e `bake()` para criar os datasets
+
+```{r}
+lm_model_prep <- lm_model_rec %>% 
+  prep(training=treino)
+
+treino_prep <- lm_model_prep %>% 
+  bake(new_data = NULL)
+
+teste_prep <- lm_model_prep %>% 
+  bake(new_data = teste)
+```
+
+# Model Fitting com feature engineering
+
+## Model Fitting
+
+-   Vamos treinar novamente um modelo de regressão linear, só que agora com os datasets pré-processados.
+
+```{r}
+lm_fit_prep <- lm_model %>% 
+  fit(formula,
+      data=treino_prep)
+```
+
+-   E printar os resultados
+
+```{r}
+lm_fit_prep
+```
+
+## Model Fitting
+
+-   Para realizar as previsões podemos utilizar a função `predict()`.
+
+```{r}
+previsao <- predict(lm_fit_prep,
+                    new_data = teste_prep)
+
+resultados <- teste_prep %>% 
+  select(nota_imdb) %>% 
+  bind_cols(previsao)
+```
+
+-   E calcular a performance dos modelos
+
+```{r}
+resultados %>% 
+  rsq(nota_imdb, estimate = .pred)
+```
+
+## Plotando os resultados
+
+::: columns
+::: {.column width="50%"}
+É possível fazer um gráfico mostrando a qualidade do ajuste entre a variável de saída real e a previsão.
+
+```{r}
+#| eval: false
+resultados %>% 
+  ggplot(aes(nota_imdb, .pred))+
+  geom_point()+
+  geom_abline(color="lightblue", linetype =2)+
+  coord_obs_pred()
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+
+
+resultados %>% 
+  ggplot(aes(nota_imdb, .pred))+
+  geom_point()+
+  geom_abline(color="lightblue", linetype =2)+
+  coord_obs_pred()
+```
+:::
+:::
+
+# Model Workflows
+
+## Utilizando `workflows`
+
+-   É possível agilizar o processo de treinamento com a função `workflow()`
+
+```{r}
+wkfl <- workflow() %>% 
+  add_model(lm_model) %>% 
+  add_recipe(lm_model_rec)
+```
+
+-   Com este objeto `workflows` treina-se novamente o modelo com `last_fit()` e avalia-se novamente o modelo com `collect_metrics()`
+
+## Utilizando `workflows`
+
+```{r}
+lm_fit_wkfl <- wkfl %>% 
+  last_fit(split=imdb_split)
+
+lm_fit_wkfl %>% 
+  collect_metrics()
+```
+
+# Validação Cruzada
+
+## Criar o objeto de validação cruzada
+
+-   O primeiro passo é criar um objeto que será o encarregado de fazer os splits sequencialmente, utilizando `vfold_cv()`
+
+```{r}
+set.seed(9988)
+
+folds <- vfold_cv(treino,
+                  v=10, strata = nota_imdb)
+
+folds
+```
+
+## Model Fitting com validação cruzada
+
+-   Pode-se aproveitar o workflow (que inclui o modelo `parsnip` e a `recipes` ).
+
+-   Mas deve-se utilizar `fit_resamples` ao inves de `fit`
+
+```{r}
+lm_fit_vc <- wkfl %>% 
+  fit_resamples(resamples = folds)
+
+lm_fit_vc %>% 
+  collect_metrics()
+```
+
+## Model Fitting com resultados detalhados
+
+-   Se `summarize = FALSE` dentro de `collect_metrics()`, então teremos um detalhamento das métricas por cada fold.
+
+```{r}
+lm_fit_vc %>% 
+  collect_metrics(summarize = FALSE)
+```
+
+# Comparação entre modelos
+
+## Comparação
+
+-   Uma vez identificado todo o processo de treinamento e avaliação de modelo utilizando a regressão linear, podemos utilizar a mesma lógica de `parsnip`, `recipes` e `workflows` em outros tipos de modelos.
+
+-   Para treinar árvores de decisão utilizamos `decision_tree()` com `set_engine("rpart")` e `set_mode("regression")`
+
+-   Para treinar random forests utilizamos `rand_forest()` com `set_engine("ranger")` e `set_mode("regression")`
+
+## Comparação
+
+-   Para treinar k-nearest neighbors utilizamos `nearest_neighbor()` com `set_engine("kknn")` e `set_mode("regression")`
+
+-   Para treinar modelos de regressão lasso utilizamos `linear_reg(penalty=0.1, mixture=1)` e `set_engine("glmnet")`
+
+-   Para treinar modelos de regressão ridge utilizamos `linear_reg(penalty=0.1, mixture=0)` e `set_engine("glmnet")`
+
+## Comparação
+
+-   Para treinar modelos de regressão elastic net utilizamos `linear_reg(penalty=0.1, mixture=0.5)` e `set_engine("glmnet")`
+
+<!-- -->
+
+-   E varios outros [aqui](https://parsnip.tidymodels.org/reference/)
