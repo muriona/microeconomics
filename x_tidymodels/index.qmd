@@ -418,3 +418,179 @@ lm_fit_vc %>%
 -   E varios outros [aqui](https://parsnip.tidymodels.org/reference/)
 
 # Problemas de classificação
+
+## Resampling
+
+-   Vamos escolher uma variável categórica para ser a nossa saída.
+
+-   o primeiro 'level' deve ser a classe positiva
+
+```{r}
+#| echo: true
+
+set.seed(202401)
+
+imdb_class <- imdb %>% 
+  mutate(Lucro = receita - orcamento,
+         Lucro_fac = factor(ifelse(Lucro>0, 'yes' ,'no')))
+
+imdb_class$Lucro_fac <- relevel(imdb_class$Lucro_fac, ref = "yes")
+
+levels(imdb_class$Lucro_fac)
+```
+
+## Resampling
+
+```{r}
+imdb_split <- initial_split(imdb_class,
+                            prop = 0.75,
+                            strata = Lucro_fac)
+
+treino <- training(imdb_split)
+testing <- testing(imdb_split)
+```
+
+Fazemos um novo split, agora utilizando a variável categórica
+
+## Model Fitting
+
+-   Vamos utilizar um modelo de regressão logística para fazer o treinamento.
+
+```{r}
+logistic_model <- logistic_reg() %>% 
+  set_engine("glm") %>% 
+  set_mode("classification")
+
+logistic_fit <- logistic_model %>% 
+  fit(Lucro_fac ~ duracao + nota_imdb + num_avaliacoes,
+      data = treino)
+
+class_preds <- logistic_fit %>% 
+  predict(new_data = teste,
+          type = "class")
+
+class_preds
+```
+
+## 
+
+## Workflows
+
+-   Podemos criar um workflow para facilitar a construção do modelo de treinamento.
+
+-   Similarmente ao caso da regressão, podemos reaproveitar vários dos `step_` que aprendemos antes.
+
+```{r}
+
+formula <- Lucro_fac ~ duracao + nota_imdb + num_avaliacoes
+
+logistic_rec <- recipe(formula,
+                       data=treino) %>%
+  step_log(num_avaliacoes, base = 10) %>% 
+  step_impute_knn(all_predictors()) %>% 
+  step_corr(all_numeric(), threshold = 0.85) %>% 
+  step_normalize(all_numeric()) %>% 
+  step_dummy(all_nominal(), -all_outcomes())
+```
+
+## Workflows
+
+-   Vamos incluir a especificação do modelo e a recipe criadas anteriormente
+
+```{r}
+
+wkfl <- workflow() %>% 
+  add_model(logistic_model) %>% 
+  add_recipe(logistic_rec)
+
+
+```
+
+-   E utilizar um procedimento de validação cruzada
+
+```{r}
+
+set.seed(2233)
+
+folds <- vfold_cv(treino,
+                  v=10, strata = Lucro_fac)
+```
+
+## Validação Cruzada
+
+-   Vamos rodar o modelo treinando-o com v=10 folds
+
+```{r}
+
+metrics_custom <- metric_set(accuracy, roc_auc, sensitivity, specificity)
+
+logistic_fit_vc <- wkfl %>% 
+  fit_resamples(resamples = folds,
+                metrics = metrics_custom,
+                control = control_resamples(save_pred = TRUE))
+
+logistic_fit_vc %>% 
+  collect_metrics()
+
+```
+
+## Plotando os resultados
+
+-   Vamos ver como ficaram as previsões
+
+```{r}
+logistic_fit_vc %>% 
+  collect_predictions()
+```
+
+## Plotando os resultados
+
+-   Vamos fazer um gráfico da curva ROC
+
+```{r}
+
+logistic_fit_vc %>% 
+  collect_predictions() %>% 
+  group_by(id) %>% 
+  roc_curve(Lucro_fac, .pred_yes) %>% 
+  autoplot()
+```
+
+## Last_fit
+
+Por fim vamos rodar novamente o modelo com os dados de teste utilizando `last_fit`
+
+```{r}
+final <- wkfl %>% 
+  last_fit(imdb_split)
+
+resultados <- final %>% 
+  collect_predictions()
+
+metrics_custom(resultados,
+               truth = Lucro_fac,
+               estimate = .pred_class, .pred_yes)
+```
+
+## Plotando os resultados
+
+::: columns
+::: {.column width="30%"}
+-   O gráfico ROC final:
+
+```{r eval = FALSE}
+resultados %>% 
+  roc_curve(Lucro_fac, .pred_yes) %>% 
+  autoplot()
+```
+:::
+
+::: {.column width="70%"}
+```{r echo=FALSE}
+
+resultados %>% 
+  roc_curve(Lucro_fac, .pred_yes) %>% 
+  autoplot()
+```
+:::
+:::
