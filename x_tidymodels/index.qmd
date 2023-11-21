@@ -9,6 +9,7 @@ format:
     background-transition: fade
     highlight-style: ayu-mirage
     incremental: true
+    scrollable: true
 code-link: true
 execute:
   echo: true
@@ -415,3 +416,5 @@ lm_fit_vc %>%
 
 -   Para treinar modelos de regressão elastic net utilizamos `linear_reg(penalty=0.1, mixture=0.5)` e `set_engine("glmnet")`
 -   E varios outros [aqui](https://parsnip.tidymodels.org/reference/)
+
+# Problemas de classificação
