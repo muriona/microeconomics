@@ -56,7 +56,7 @@ xaringanExtra::use_share_again()
 
 - As empresas determinam simultaneamente a quantidade a ser produzida $(q_{A},q_{B})$, sendo que cada uma defronta-se com a curva de demanda:
 
-$$P(Q)=W-Q$$
+$$p(Q)=W-Q$$
 - onde $W>0$ 
 
 ---
@@ -64,15 +64,15 @@ $$P(Q)=W-Q$$
 
 - O preço a ser cobrado é aquele que iguala a demanda e oferta, constituida pela produção das duas firmas, $Q=q_{A}+q_{B}$, portanto, o preço resultante do mercado seria:
 
-$$P=W-(q_{A}+q_{B})$$
+$$p=W-(q_{A}+q_{B})$$
 --
 - Para maximizar seus lucros, a empresa A iguala sua RMg a seu CMg. A $RT_{A}$ será é dada por:
 
-$$RT_{A}=Pq_{A}=Wq_{A}-(q_{A}+q_{B})q_{A}$$
+$$RT_{A}=p \times q_{A}=W \times q_{A}-(q_{A}+q_{B})\times q_{A}$$
 --
 - Portanto, sua RMg será:
 
-$$RMg_{A}=\frac{d}{d q_{A}}RT_{A}=W-2q_{A}-q_{B}$$
+$$RMg_{A}=\frac{\partial}{\partial q_{A}}RT_{A}=W-2q_{A}-q_{B}$$
 ---
 # Igualando RMg e CMg
 
@@ -86,17 +86,17 @@ $$W-2q_{A}-q_{B}=c$$
 $$q_{A}=\frac{W-q_{B}-c}{2}$$
 --
 
-- Esta expressão denota que a quantidade maximizadora de lucro da firma A depende de quanto esta acredita que a firma B irá produzir
+- Esta expressão denota que a quantidade maximizadora de lucro da firma $A$ depende de quanto esta acredita que a firma $B$ irá produzir
 
 --
 
-- Assumindo que a firma B realiza o mesmo raciocínio, a quantidade otimizadora de lucro de B será:
+- Assumindo que a firma $B$ realiza o mesmo raciocínio, a quantidade otimizadora de lucro de $B$ será:
 
 $$q_{B}=\frac{W-q_{A}-c}{2}$$
 ---
 # Interdependência
 
-- Ambas as equações de quantidade demonstram a interdependência entre as estratégias de A e B
+- Ambas as equações de quantidade demonstram a interdependência entre as estratégias de $A$ e $B$
 
 --
 
@@ -113,7 +113,7 @@ $$q_{A}=q_{B}= \frac{W-c}{3}$$
 
 - Se essas são as quantidades ótimas, o preço de mercado será:
 
-$$P=W-Q=W-2(\frac{W-c}{3})=\frac{W+2c}{3}$$
+$$p=W-Q=W-2\times (\frac{W-c}{3})=\frac{W+2c}{3}$$
 --
 
 - E o Lucro $\pi$ de cada firma será:
@@ -324,6 +324,115 @@ data %>%
     decimals = 2
   )
 ```
+---
+# Exercício mais complexo
+
+Para aprimorar o exemplo com três firmas no mercado, usaremos o mesmo princípio do modelo de Cournot. Suponha que temos três empresas, A, B e C, com as seguintes funções de custo total:
+
+- $C_A(q_A) = 10q_A$
+- $C_B(q_B) = 15q_B$
+- $C_C(q_C) = 20q_C$
+
+E a demanda de mercado será:
+
+$$P = 100 - Q$$
+
+onde $Q = q_A + q_B + q_C$.
+
+---
+# Passo 1: Determinar as funções de lucro das empresas
+
+As funções de lucro das empresas A, B e C são dadas por:
+
+- $\pi_A = Pq_A - C_A(q_A)$
+- $\pi_B = Pq_B - C_B(q_B)$
+- $\pi_C = Pq_C - C_C(q_C)$
+
+Substituindo \( P \) e as funções de custo:
+
+- $\pi_A = (100 - Q)q_A - 10q_A$
+- $\pi_B = (100 - Q)q_B - 15q_B$
+- $\pi_C = (100 - Q)q_C - 20q_C$
+
+---
+# Passo 2: Determinar as funções de reação das empresas
+
+Para encontrar as funções de reação, maximizamos o lucro de cada empresa em relação à sua quantidade produzida, assumindo que as quantidades produzidas pelas outras empresas são constantes.
+
+- Empresa A
+
+- $\pi_A = (100 - q_A - q_B - q_C)q_A - 10q_A$
+- $\pi_A = 100q_A - q_A^2 - q_Aq_B - q_Aq_C - 10q_A$
+- $\pi_A = 90q_A - q_A^2 - q_Aq_B - q_Aq_C$
+---
+# Passo 2
+
+Para maximizar o lucro, derivamos em relação a $q_A$ e igualamos a zero:
+$\frac{\partial \pi_A}{\partial q_A} = 90 - 2q_A - q_B - q_C = 0$
+
+$q_A = \frac{90 - q_B - q_C}{2}$ - Esta é a função de reação da empresa A.
+
+Empresa B:
+
+$\pi_B = (100 - q_A - q_B - q_C)q_B - 15q_B$
+$\pi_B = 100q_B - q_Aq_B - q_B^2 - q_Bq_C - 15q_B$
+$\pi_B = 85q_B - q_Aq_B - q_B^2 - q_Bq_C$
+
+$q_B = \frac{85 - q_A - q_C}{2}$ - Esta é a função de reação da empresa B.
+
+$q_C = \frac{80 - q_A - q_B}{2}$ - Esta é a função de reação da empresa C.
+---
+# Passo 3: Resolver o sistema de equações
+
+Agora, resolvemos o sistema de equações simultâneas formado pelas funções de reação das empresas:
+
+$q_A = \frac{90 - q_B - q_C}{2}$
+$q_B = \frac{85 - q_A - q_C}{2}$
+$q_C = \frac{80 - q_A - q_B}{2}$
+
+- $q_C \approx 5.42$
+
+Agora substituímos $q_C \approx 5.42$ nas funções de reação de $q_A$ e $q_B$:
+
+- $q_A \approx 29.86$
+- $q_B \approx 24.86$
+---
+# Passo 4: Determinar o preço de mercado
+
+Agora, substituímos $q_A$, $q_B$, e $q_C$ na função de demanda para encontrar o preço de mercado:
+
+- $Q = q_A + q_B + q_C$
+- $Q = 29.86 + 24.86 + 5.42$
+- $Q = 60.14$
+
+e
+
+- $P = 100 - Q$
+- $P = 100 - 60.14$
+- $P \approx 39.86$
+---
+# Passo 5: Calcular os lucros
+
+Finalmente, calculamos os lucros das empresas:
+
+$\pi_A = (100 - Q)q_A - 10q_A$
+$\pi_A = (39.86)29.86 - 10(29.86)$
+$\pi_A \approx 1190.23 - 298.60$
+$\pi_A \approx 891.63$
+
+$\pi_B \approx 618.79$
+
+$\pi_C \approx 107.71$
+
+---
+# Resultado
+
+- Neste exemplo mais complexo de oligopólio de Cournot com três empresas, as quantidades de equilíbrio produzidas pelas empresas A, B e C são aproximadamente 29.86, 24.86 e 5.42, respectivamente. 
+
+- O preço de mercado resultante é aproximadamente 39.86, e 
+
+- os lucros das empresas A, B e C são aproximadamente 891.63, 618.79 e 107.71, respectivamente.
+
 
 ---
 
