@@ -114,11 +114,18 @@ $$q_{A}=q_{B}= \frac{W-c}{3}$$
 - Se essas são as quantidades ótimas, o preço de mercado será:
 
 $$p=W-Q=W-2\times (\frac{W-c}{3})=\frac{W+2c}{3}$$
---
+# Receita e Lucro
+
+- A Receita Total será:
+$$ RT_A = RT_B = \frac{(W-c)(W+2c)}{9}$$
 
 - E o Lucro $\pi$ de cada firma será:
 
-$$\pi_{A}=\pi_{B}=\frac{(W-c)(W+2c)}{9}$$
+$$\pi_{A}= RT_A - c \times q_A$$
+--
+$$\pi_{B}= RT_B - c \times q_B$$
+
+
 ---
 # E na situação de Cartel?
 
