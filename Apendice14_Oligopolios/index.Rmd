@@ -407,48 +407,46 @@ $q_A = \frac{90 - q_B - q_C}{2}$
 $q_B = \frac{85 - q_A - q_C}{2}$
 $q_C = \frac{80 - q_A - q_B}{2}$
 
-- $q_C \approx 5.42$
+- $q_C \approx 16.25$
 
-Agora substituímos $q_C \approx 5.42$ nas funções de reação de $q_A$ e $q_B$:
+Agora substituímos $q_C \approx 16.25$ nas funções de reação de $q_A$ e $q_B$:
 
-- $q_A \approx 29.86$
-- $q_B \approx 24.86$
+- $q_A \approx 26.25$
+- $q_B \approx 21.25$
 ---
 # Passo 4: Determinar o preço de mercado
 
 Agora, substituímos $q_A$, $q_B$, e $q_C$ na função de demanda para encontrar o preço de mercado:
 
 - $Q = q_A + q_B + q_C$
-- $Q = 29.86 + 24.86 + 5.42$
-- $Q = 60.14$
+- $Q = 63.75$
 
 e
 
 - $P = 100 - Q$
-- $P = 100 - 60.14$
-- $P \approx 39.86$
+- $P = 100 - 63.75$
+- $P \approx 36.25$
 ---
 # Passo 5: Calcular os lucros
 
 Finalmente, calculamos os lucros das empresas:
 
-$\pi_A = (100 - Q)q_A - 10q_A$
-$\pi_A = (39.86)29.86 - 10(29.86)$
-$\pi_A \approx 1190.23 - 298.60$
-$\pi_A \approx 891.63$
+$$\pi_A = (100 - Q)q_A - 10q_A$$
 
-$\pi_B \approx 618.79$
+$$\pi_A \approx 689.06$$
 
-$\pi_C \approx 107.71$
+$\pi_B \approx 557.81$
+
+$\pi_C \approx 426.56$
 
 ---
 # Resultado
 
-- Neste exemplo mais complexo de oligopólio de Cournot com três empresas, as quantidades de equilíbrio produzidas pelas empresas A, B e C são aproximadamente 29.86, 24.86 e 5.42, respectivamente. 
+- Neste exemplo mais complexo de oligopólio de Cournot com três empresas, as quantidades de equilíbrio produzidas pelas empresas A, B e C são aproximadamente 26.25, 21.25 e 16.25, respectivamente. 
 
-- O preço de mercado resultante é aproximadamente 39.86, e 
+- O preço de mercado resultante é aproximadamente 36.25, e 
 
-- os lucros das empresas A, B e C são aproximadamente 891.63, 618.79 e 107.71, respectivamente.
+- os lucros das empresas A, B e C são aproximadamente 689, 557 e 426, respectivamente.
 
 
 ---
